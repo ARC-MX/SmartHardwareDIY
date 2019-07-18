@@ -17,4 +17,9 @@
   
 ## 说明：
       本项目现阶段完全开源，欢迎各位小伙伴共同参与，如有需要和想要实现的功能，请和我联系一起开发；
+## 打赏
+      如果各位对本项目感兴趣，别犹豫打赏打赏，激励激励，吾辈必将感激涕零！！！
+    ![支付宝](https://github.com/ARC-MX/SmartHardwareDIY/blob/master/doc/Image/AliPay.jpg)
+    
+    ![微信](https://github.com/ARC-MX/SmartHardwareDIY/blob/master/doc/Image/WeChatPay.jpg)
   联系方式：wmx129674@hotmail.com
