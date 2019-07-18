@@ -1,2 +1,49 @@
 <!--pages/bleinfo/bleinfo.wxml-->
-<text>pages/bleinfo/bleinfo.wxml</text>
+
+
+<scroll-view class= "scroll-view" scroll-y="true" style="height: 100%" scroll-with-animation>
+  <view wx:for="{{bluetoothDevices}}" wx:key="index" data-device-id="{{item.deviceId}}" data-name="{{item.name || item.localName}}" bindtap="createBLEConnection" class="device_item" hover-class="device_item_hover">
+      <view style="font-size: 16px; color: #333;">{{item.name}}</view>
+      <view style="font-size: 10px">信号强度: {{item.RSSI}}dBm ({{utils.max(0, item.RSSI + 100)}}%)</view>
+      <view style="font-size: 10px">UUID: {{item.deviceId}}</view>
+      <view style="font-size: 10px">Service数量: {{utils.len(item.advertisServiceUUIDs)}}</view>
+    </view>
+</scroll-view>
+
+  <van-action-sheet show="{{ actionSheetHidden }}" title="标题" bind:close="toggleActionSheet">
+    <van-switch-cell title="删除无主服务设备" checked="{{ filterEnableChecked }}" bind:change="filterEnable" />
+  </van-action-sheet>
+
+<!--
+  <view class="connected_info" wx:if="{{connected}}">
+    <view>
+      <text>已连接到 {{name}}</text>
+      <view class="operation">
+        <button wx:if="{{canWrite}}" size="mini" bindtap="writeBLECharacteristicValue">写数据</button>
+        <button size="mini" bindtap="closeBLEConnection">断开连接</button>
+      </view>
+    </view>
+
+    <view wx:for="{{chs}}" wx:key="index" style="font-size: 12px; margin-top: 10px;">
+      <view>特性UUID: {{item.uuid}}</view>
+      <view>特性值: {{item.value}}</view>
+    </view>
+  </view>
+
+  <view class="debugMessageView">
+    <text class="debugMessageText">{{debugM}}</text>
+  </view>
+
+  <van-button bind:click="toggleActionSheet">弹出带标题的 ActionSheet</van-button>
+ 
+
+
+  <van-collapse class = "setcollapse" value="{{ activeNames }}" bind:change="collapseChange" accordion>
+    <van-collapse-item class = "setcollapse-item" title="配置选项" name="1">
+      <van-switch-cell title= "删除无主服务设备" checked="{{ filterEnableChecked }}" bind:change="filterEnable" />
+    </van-collapse-item>
+  </van-collapse>
+  
+-->
+
+

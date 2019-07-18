@@ -55,10 +55,7 @@ Page({
   openBluetoothPage: function (e) {
 
     wx.navigateTo({
-      url: '/pages/bleinfo/bleinfo',
-      success: function(res) {},
-      fail: function(res) {},
-      complete: function(res) {},
+      url: '/pages/bleinfo/bleinfo'
     })
 
   }

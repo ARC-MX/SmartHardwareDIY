@@ -1,0 +1,66 @@
+{
+  "_from": "@vant/icons@1.1.9",
+  "_id": "@vant/icons@1.1.9",
+  "_inBundle": false,
+  "_integrity": "sha512-nGw0EE5jWe5doIJ6aHll2ia5Z/X5jxK9y5xK/r6swhGU3/Z12nrYVkN3T+EH+sRrMB4+Q/w054e10Gq4cV4T7g==",
+  "_location": "/@vant/icons",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "@vant/icons@1.1.9",
+    "name": "@vant/icons",
+    "escapedName": "@vant%2ficons",
+    "scope": "@vant",
+    "rawSpec": "1.1.9",
+    "saveSpec": null,
+    "fetchSpec": "1.1.9"
+  },
+  "_requiredBy": [
+    "#DEV:/"
+  ],
+  "_resolved": "https://registry.npmjs.org/@vant/icons/-/icons-1.1.9.tgz",
+  "_shasum": "37eafdaff5fcfbb594a27a1470ff3adeb2fa0301",
+  "_spec": "@vant/icons@1.1.9",
+  "_where": "E:\\Project\\WeChat\\vant-weapp",
+  "author": {
+    "name": "chenjiahan"
+  },
+  "bugs": {
+    "url": "https://github.com/youzan/vant-icons/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "vant icons",
+  "devDependencies": {
+    "fast-glob": "^3.0.0",
+    "fs-extra": "^8.0.1",
+    "gulp": "^4.0.2",
+    "gulp-iconfont": "^10.0.3",
+    "gulp-iconfont-css": "^3.0.0",
+    "md5-file": "^4.0.0",
+    "shelljs": "^0.8.3",
+    "svgo": "^1.2.2"
+  },
+  "files": [
+    "src"
+  ],
+  "homepage": "https://github.com/youzan/vant-icons#readme",
+  "keywords": [
+    "vant",
+    "icons"
+  ],
+  "license": "MIT",
+  "main": "./src/config.js",
+  "name": "@vant/icons",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/youzan/vant-icons.git"
+  },
+  "scripts": {
+    "build": "npm run export && gulp --gulpfile ./build/build-iconfont.js",
+    "export": "node ./build/export.js",
+    "release": "sh ./build/release.sh"
+  },
+  "version": "1.1.9"
+}

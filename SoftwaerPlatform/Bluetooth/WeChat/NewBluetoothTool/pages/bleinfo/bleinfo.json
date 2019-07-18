@@ -1,3 +1,17 @@
 {
-  "usingComponents": {}
+    "usingComponents": {
+        "van-action-sheet"  : "/dist/action-sheet/index",
+        "van-button"        : "/dist/button/index",
+        "van-switch"        : "/dist/switch/index",
+        "van-switch-cell"   : "/dist/switch-cell/index",
+        "van-nav-bar"       : "/dist/nav-bar/index",
+        "van-area"          : "/dist/area/index",
+        "van-collapse"      : "/dist/collapse/index",
+        "van-collapse-item" : "/dist/collapse-item/index"
+
+        
+  },
+  "backgroundTextStyle": "dark",
+  "onReachBottomDistance":50,
+  "enablePullDownRefresh": true
 }

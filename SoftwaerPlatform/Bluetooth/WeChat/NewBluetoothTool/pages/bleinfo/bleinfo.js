@@ -5,6 +5,9 @@ Page({
    * 页面的初始数据
    */
   data: {
+    actionSheetHidden: false,
+    activeNames: ['1'],
+    filterEnableChecked:false,
 
   },
 
@@ -12,6 +15,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+
 
   },
 
@@ -48,13 +52,27 @@ Page({
    */
   onPullDownRefresh: function () {
 
+    this.setData({
+      show: !this.data.show
+    });
+    console.info("下拉事件");
   },
 
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function () {
+  onPageScroll: function () {
 
+    console.info("上拉事件");
+    this.setData({
+
+      actionSheetHidden: !this.data.actionSheetHidden
+    });
+  },
+  toggleActionSheet() {
+    this.setData({
+      actionSheetHidden: !this.data.actionSheetHidden
+    });
   },
 
   /**
@@ -62,5 +80,29 @@ Page({
    */
   onShareAppMessage: function () {
 
+  },
+
+  collapseChange(event) {
+    this.setData({
+      activeNames: event.detail
+    });
   }
+
+
+
 })
+
+
+
+/**
+
+  < action - sheet hidden = "{{actionSheetShow}}" bindchange = "listenerActionSheet" >
+    <action-sheet-item>
+      <view class="content">内容</view>
+      <switch bindchange="filterSwitchChange" />
+    </action-sheet-item>
+    <!--自动隐藏action - sheet-- >
+      <action-sheet-cancel>取消</action-sheet-cancel>
+</action - sheet >
+
+ */

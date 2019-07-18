@@ -1,0 +1,15 @@
+{
+  "name": "newbluetoothtool",
+  "version": "1.0.0",
+  "description": "微信蓝牙助手",
+  "main": "app.js",
+  "dependencies": {
+    "vant-weapp": "^0.5.16"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ARCW",
+  "license": "ISC"
+}
