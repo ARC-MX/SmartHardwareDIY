@@ -1,19 +1,21 @@
 <!--pages/bleinfo/bleinfo.wxml-->
+<view class ="myView" bindlongpress = "toggleActionSheet">
 
+  <scroll-view class= "scrollView" scroll-y="true" style="height: 100%" scroll-with-animation >
+    <view wx:for="{{bluetoothDevices}}" wx:key="index" data-device-id="{{item.deviceId}}" data-name="{{item.name || item.localName}}" bindtap="createBLEConnection" class="device_item" hover-class="device_item_hover">
+        <view style="font-size: 16px; color: #333;">{{item.name}}</view>
+        <view style="font-size: 10px">信号强度: {{item.RSSI}}dBm ({{utils.max(0, item.RSSI + 100)}}%)</view>
+        <view style="font-size: 10px">UUID: {{item.deviceId}}</view>
+        <view style="font-size: 10px">Service数量: {{utils.len(item.advertisServiceUUIDs)}}</view>
+      </view>
+  </scroll-view>
 
-<scroll-view class= "scroll-view" scroll-y="true" style="height: 100%" scroll-with-animation>
-  <view wx:for="{{bluetoothDevices}}" wx:key="index" data-device-id="{{item.deviceId}}" data-name="{{item.name || item.localName}}" bindtap="createBLEConnection" class="device_item" hover-class="device_item_hover">
-      <view style="font-size: 16px; color: #333;">{{item.name}}</view>
-      <view style="font-size: 10px">信号强度: {{item.RSSI}}dBm ({{utils.max(0, item.RSSI + 100)}}%)</view>
-      <view style="font-size: 10px">UUID: {{item.deviceId}}</view>
-      <view style="font-size: 10px">Service数量: {{utils.len(item.advertisServiceUUIDs)}}</view>
-    </view>
-</scroll-view>
-
-  <van-action-sheet show="{{ actionSheetHidden }}" title="标题" bind:close="toggleActionSheet">
+  <van-action-sheet show="{{ actionSheetHidden }}" title="应用设置" bind:close="toggleActionSheet">
     <van-switch-cell title="删除无主服务设备" checked="{{ filterEnableChecked }}" bind:change="filterEnable" />
   </van-action-sheet>
 
+
+</view>
 <!--
   <view class="connected_info" wx:if="{{connected}}">
     <view>
