@@ -1,6 +1,6 @@
 # SmartHardwareDIY
 
-![图片] (https://github.com/ARC-MX/SmartHardwareDIY/blob/master/doc/Image/9a6a713193529e27aeb66b61a2960d0b8266bcfb8121a-9xcuYm_fw658.jpg)
+![图片](https://github.com/ARC-MX/SmartHardwareDIY/blob/master/doc/Image/SmartDevice.jpg)
 ## 项目介绍：
       本项目纯属兴趣使然，DIY智能硬件，兼容微信小程序，蓝牙控制等；是基于ESP32-物联网硬件平台开发的小项目
   硬件平台之后会陆续上传PCB等信息，ESP32底层程序
