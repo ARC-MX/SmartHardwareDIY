@@ -7,4 +7,17 @@
 
 <view wx:for="{{currentDevice.advertisServiceUUIDs}}" wx:key="index" data-service-uuid="{{item}}" class="ble_ServiceUUIDs">
   <view class="ble_ServiceUUID"> {{item}}</view>
+
+
+  <view class="flex-wrp-device" style="flex-direction:column;">
+    <view class="flex-item ble_name">{{item.name}}</view>
+    <view class="flex-item ble_deviceId">UUID: {{item.deviceId}}</view>
+    <view class="flex-item ble_ServiceNumbers">Service数量: {{item.advertisServiceUUIDs.length}}</view>
+    <view class="flex-item ble_ServiceUUIDs">ServiceUUID:</view>
+    <view wx:for="{{item.advertisServiceUUIDs}}" wx:key="index" data-service-uuid="{{item}}" class="flex-item ble_ServiceUUIDs">
+      <view class="flex-item ble_ServiceUUID"> {{item}}</view>
+    </view>
+  </view>
+
+
 </view>
