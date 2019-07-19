@@ -1,2 +1,8 @@
-.desktop.ini
 
+.HardwarePlatform/Bluetooth/BluetoothTest/pio
+.HardwarePlatform/Bluetooth/BluetoothTest/pioenvs
+.HardwarePlatform/Bluetooth/BluetoothTest/piolibdeps
+.HardwarePlatform/Bluetooth/BluetoothTest/vscode/.browse.c_cpp.db*
+.HardwarePlatform/Bluetooth/BluetoothTest/vscode/c_cpp_properties.json
+.HardwarePlatform/Bluetooth/BluetoothTest/vscode/launch.json
+.desktop.ini
