@@ -1,13 +1,37 @@
 <!--pages/bleinfo/bleinfo.wxml-->
-<view class ="myView" bindlongpress = "toggleActionSheet">
 
-  <scroll-view class= "scrollView" scroll-y="true" style="height: 100%" scroll-with-animation >
-    <view wx:for="{{bluetoothDevices}}" wx:key="index" data-device-id="{{item.deviceId}}" data-name="{{item.name || item.localName}}" bindtap="createBLEConnection" class="device_item" hover-class="device_item_hover">
-        <view style="font-size: 16px; color: #333;">{{item.name}}</view>
-        <view style="font-size: 10px">信号强度: {{item.RSSI}}dBm ({{utils.max(0, item.RSSI + 100)}}%)</view>
-        <view style="font-size: 10px">UUID: {{item.deviceId}}</view>
-        <view style="font-size: 10px">Service数量: {{utils.len(item.advertisServiceUUIDs)}}</view>
+
+<wxs module="utils">
+  module.exports.max = function(n1, n2) {
+    return Math.max(n1, n2)
+  }
+  module.exports.len = function(arr) {
+    arr = arr || []
+    return arr.length
+  }
+</wxs>
+
+
+<view class="myView" bindlongpress="toggleActionSheet">
+  <scroll-view class="device_list" scroll-y="true" style="height: 100%" scroll-with-animation>
+    <view wx:for="{{bluetoothDevices}}" wx:key="index" data-device-id="{{item.deviceId}}" data-index='{{index}}' data-name="{{item.name || item.localName}}" bindtap="createBLEConnectionPage" class="device_item" hover-class="device_item_hover">
+      <view class="flex-wrp" style="flex-direction:row;">
+        <view class="flex-wrp-device" style="flex-direction:column;">
+          <view class="flex-item ble_name">{{item.name}}</view>
+          <view class="flex-item ble_deviceId">UUID: {{item.deviceId}}</view>
+          <view class="flex-item ble_ServiceNumbers">Service数量: {{item.advertisServiceUUIDs.length}}</view>
+          <view class="flex-item ble_ServiceUUIDs">ServiceUUID:</view>
+          <view wx:for="{{item.advertisServiceUUIDs}}" wx:key="index" data-service-uuid="{{item}}" class="flex-item ble_ServiceUUIDs">
+            <view class="flex-item ble_ServiceUUID"> {{item}}</view>
+          </view>
+        </view>
+        <view class="flex-wrp-RRSI" style="flex-direction:row;">
+          <view class="flex-item ble_RRSI">{{item.RSSI}}</view>
+          <view class="flex-item ble_RRSI_unit">dBm</view>
+          <view class="flex-item ble_RRSI_per">({{utils.max(0, item.RSSI + 100)}}%)</view>
+        </view>
       </view>
+    </view>
   </scroll-view>
 
   <van-action-sheet show="{{ actionSheetHidden }}" title="应用设置" bind:close="toggleActionSheet">
@@ -47,5 +71,3 @@
   </van-collapse>
   
 -->
-
-

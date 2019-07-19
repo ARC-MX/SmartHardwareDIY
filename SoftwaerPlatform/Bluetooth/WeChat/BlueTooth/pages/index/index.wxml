@@ -1,4 +1,17 @@
 <!--index.wxml-->
+
+
+<wxs module="utils">
+module.exports.max = function(n1, n2) {
+  return Math.max(n1, n2)
+}
+module.exports.len = function(arr) {
+  arr = arr || []
+  return arr.length
+}
+</wxs>
+
+
 <view class="container">
 
   <view class="devices_summary">已发现 {{bluetoothDevices.length}} 个外围设备：</view>

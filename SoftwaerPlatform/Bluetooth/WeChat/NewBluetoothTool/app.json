@@ -2,7 +2,8 @@
   "pages": [
     "pages/index/index",
     "pages/logs/logs",
-    "pages/bleinfo/bleinfo"
+    "pages/bleinfo/bleinfo",
+    "pages/connection/connection"
   ],
   "window": {
     "backgroundTextStyle": "light",

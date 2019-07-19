@@ -126,12 +126,6 @@ Page({
       this.setData({
         bluetoothDevices: []
       })
-
-    //  res.devices.forEach(device => {
-    //    this.filterEachDevice(device)
-    //  })
-
-
     }
   },
 
@@ -181,10 +175,11 @@ Page({
           return;
         }
       } else {
-        console.log("------监听寻找到新设备的事件------\n")
+        
         this.setData({
           debugM: "寻找到新设备\n" + device.name,
         });
+        //console.log("------监听寻找到新设备的事件------\n",device.advertisServiceUUIDs.length)
         const foundDevices = this.data.bluetoothDevices
         const idx = inArray(foundDevices, 'deviceId', device.deviceId)//判断当前设备是否列表中
         const data = {}
@@ -196,7 +191,22 @@ Page({
         }
         this.setData(data)
       }
- }
+ },
+  createBLEConnectionPage:function(e){
+
+//    const ds = e.currentTarget.dataset  //获取当前蓝牙目标
+//    const deviceId = ds.deviceId        //获取蓝牙设备ID
+//    const name = ds.name                //获取蓝牙名称
+
+    //拿到点击的index下标
+    
+    var index = e.currentTarget.dataset.index
+    //将对象转为string
+    var bluetoothDevice = JSON.stringify(this.data.bluetoothDevices[index])
+    wx.navigateTo({
+      url: '../connection/connection?currentTarget=' + bluetoothDevice
+    })
+  }
 
 
 })

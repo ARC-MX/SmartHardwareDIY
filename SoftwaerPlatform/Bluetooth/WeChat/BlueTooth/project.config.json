@@ -24,7 +24,7 @@
 	"compileType": "miniprogram",
 	"libVersion": "2.7.2",
 	"appid": "wx12c4f1b465b58525",
-	"projectname": "BlueToothTool",
+	"projectname": "BlueTooth",
 	"debugOptions": {
 		"hidedInDevtools": []
 	},
