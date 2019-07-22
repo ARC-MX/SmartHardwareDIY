@@ -5,10 +5,33 @@
 <view class="deviceState">信号质量：{{currentDevice.RSSI}}dBm</view>
 <view class="deviceState">连接状态：{{connected}}</view>
 
+
+<van-collapse wx:for="{{currentDeviceService}}" wx:key="index" data-service-uuid="{{item}}" class="ServiceUUIDs" value="{{ activeName }}" bind:change="onChange" accordion>
+  <van-collapse-item title='{{item.uuid}}' name="{{index}}">
+    <view class="flex-wrp-services" style="flex-direction:column;">
+      <view class="flex-item services_type">服务类型：{{servicesType}}</view>
+      <view class="flex-item services_isPrimary">是否主服务：{{item.isPrimary}}</view>
+          <view wx:for="{{currentCharacteristics}}" wx:key="index" data-service-uuid="{{item}}"class="flex-wrp-characteristics" style="flex-direction:column;">
+            <view class="flex-item characteristicsUUID">uuid：{{item.uuid}}</view>
+            <view class="flex-Props" style="flex-direction:row;">
+            <view class="flex-item characteristicsProps">Props:</view>
+            <view class="flex-item characteristicsProps" wx-if="{{item.properties.read}}">读 </view>
+            <view class="flex-item characteristicsProps" wx-if="{{item.properties.write}}">写 </view>
+            <view class="flex-item characteristicsProps" wx-if="{{item.properties.notify}}">通知 </view>
+            <view class="flex-item characteristicsProps" wx-if="{{item.properties.indicate}}">指示</view>
+            </view>
+            <view class="flex-item characteristicsValue">Value:{{item.value}}</view>
+          </view>
+    </view>
+  </van-collapse-item>
+</van-collapse>
+
+
+
+
+<!--->
 <view wx:for="{{currentDevice.advertisServiceUUIDs}}" wx:key="index" data-service-uuid="{{item}}" class="ble_ServiceUUIDs">
   <view class="ble_ServiceUUID"> {{item}}</view>
-
-
   <view class="flex-wrp-device" style="flex-direction:column;">
     <view class="flex-item ble_name">{{item.name}}</view>
     <view class="flex-item ble_deviceId">UUID: {{item.deviceId}}</view>
@@ -21,3 +44,4 @@
 
 
 </view>
+<-->

@@ -14,7 +14,7 @@ function inArray(arr, key, val) {
 function ab2hex(buffer) {
   var hexArr = Array.prototype.map.call(
     new Uint8Array(buffer),
-    function (bit) {
+    function(bit) {
       return ('00' + bit.toString(16)).slice(-2)
     }
   )
@@ -27,7 +27,13 @@ Page({
    * 页面的初始数据
    */
   data: {
+    deviceId: 0,
     currentDevice: [],
+    currentDeviceService: [],
+    activeServiceId: 0,
+    servicesType: "自定义",
+    currentCharacteristics: [],
+    activeName: 0,
     connected: " ...",
     debugM: "页面跳转"
   },
@@ -46,11 +52,12 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function() {
-    const deviceId= this.data.currentDevice.deviceId;
+    const deviceId = this.data.currentDevice.deviceId;
     wx.createBLEConnection({
       deviceId,
       success: (res) => {
         this.setData({
+          deviceId: deviceId,
           connected: "已连接",
           debugM: "关闭蓝牙服务\n" + res.errMsg,
         })
@@ -83,17 +90,18 @@ Page({
         console.log(deviceId)
         console.log("------获取蓝牙设备(" + deviceId + ")所有服务------\n", res)
         //遍历蓝牙服务列表
+
+        /**
         for (let i = 0; i < res.services.length; i++) {
-          //该服务是主服务
           if (res.services[i].isPrimary) {
-            this.setData({
-              debugM: "获取蓝牙设备" + deviceId + "主服务\n uuid:" + res.services[i].uuid,
-            })
-            //获取蓝牙设备某个服务中所有特征值
             this.getBLEDeviceCharacteristics(deviceId, res.services[i].uuid)
-            return
           }
         }
+         */
+
+        this.setData({
+          currentDeviceService: res.services
+        })
       }
     })
   },
@@ -106,6 +114,12 @@ Page({
       serviceId,
       success: (res) => {
         console.log("------获取蓝牙设备(" + deviceId + ")主服务(" + serviceId + ")特征值------\n", res, res.characteristics)
+        
+        //记录当前服务下的所有特征值
+        this.setData({
+          currentCharacteristics: res.characteristics
+        })
+
         //遍历所有特征值
         for (let i = 0; i < res.characteristics.length; i++) {
           let item = res.characteristics[i]
@@ -118,6 +132,7 @@ Page({
               characteristicId: item.uuid,
             })
           }
+
           //该特征值支持的操作类型可写
           if (item.properties.write) {
             this.setData({
@@ -127,7 +142,7 @@ Page({
             this._serviceId = serviceId
             this._characteristicId = item.uuid
             //写入操作
-            this.writeBLECharacteristicValue()
+            // this.writeBLECharacteristicValue()
           }
           //该特征值是否支持 notify（通知） 或 indicate（指示） 操作
           if (item.properties.notify || item.properties.indicate) {
@@ -138,37 +153,44 @@ Page({
               state: true,
             })
           }
+
+
         }
       },
       fail(res) {
         console.error("------获取蓝牙设备(" + deviceId + ")主服务(" + serviceId + ")特征值失败------", res)
       }
     })
-
+/** 
     // 操作之前先监听，保证第一时间获取数据
     wx.onBLECharacteristicValueChange((characteristic) => {
-      const idx = inArray(this.data.chs, 'uuid', characteristic.characteristicId)
+      const idx = inArray(this.data.currentCharacteristics, 'uuid', characteristic.characteristicId)
       const data = {}
       if (idx === -1) {
-        data[`chs[${this.data.chs.length}]`] = {
+        data[`currentCharacteristics[${this.data.currentCharacteristics.length}]`] = {
           uuid: characteristic.characteristicId,
           value: ab2hex(characteristic.value)
+  
         }
       } else {
-        data[`chs[${idx}]`] = {
+        data[`currentCharacteristics[${idx}]`] = {
           uuid: characteristic.characteristicId,
           value: ab2hex(characteristic.value)
         }
       }
-      //data[`chs[${this.data.chs.length}]`] = {
+     
+      //data[`currentCharacteristics[${this.data.currentCharacteristics.length}]`] = {
       //   uuid: characteristic.characteristicId,
       //   value: "........"
       // }
       this.setData(data)
     })
+
+*/
+    
   },
-  
-  stopBluetoothDevicesDiscovery: function (e) {
+
+  stopBluetoothDevicesDiscovery: function(e) {
     wx.stopBluetoothDevicesDiscovery({
       success: (res) => {
         console.log("------停止搜寻附近的蓝牙外围设备------\n", res)
@@ -178,5 +200,13 @@ Page({
       },
     })
   },
+  onChange(event) {
+
+    this.getBLEDeviceCharacteristics(this.data.deviceId, this.data.currentDeviceService[event.detail].uuid)
+    this.setData({
+      activeName: event.detail,
+      activeServiceId: this.data.currentDeviceService[event.detail]
+    });
+  }
 
 })

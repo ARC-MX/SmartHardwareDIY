@@ -1,1 +1,17 @@
 /* pages/connection/connection.wxss */
+
+.flex-wrp {
+  display: flex;
+  height: auto;
+  justify-content: space-between;
+  border-color: rgb(235, 79, 31);
+  border-style: solid;
+  border-bottom: 1pt;
+  border-width: 1px 0 0 0;
+}
+
+.flex-Props {
+  display: flex;
+  height: auto;
+  justify-content: space-between;
+}
