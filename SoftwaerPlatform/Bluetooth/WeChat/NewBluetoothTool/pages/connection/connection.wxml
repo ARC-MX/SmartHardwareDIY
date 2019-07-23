@@ -11,7 +11,7 @@
     <view class="flex-wrp-services" style="flex-direction:column;">
       <view class="flex-item services_type">服务类型：{{servicesType}}</view>
       <view class="flex-item services_isPrimary">是否主服务：{{item.isPrimary}}</view>
-          <view wx:for="{{currentCharacteristics}}" wx:key="index" data-service-uuid="{{item}}"class="flex-wrp-characteristics" style="flex-direction:column;">
+          <view wx:for="{{currentCharacteristics}}" wx:key="index" data-characteristicsUUID="{{item}}"class="flex-wrp-characteristics" style="flex-direction:column;" bindtap="selectCharacteristic">
             <view class="flex-item characteristicsUUID">uuid：{{item.uuid}}</view>
             <view class="flex-Props" style="flex-direction:row;">
             <view class="flex-item characteristicsProps">Props:</view>

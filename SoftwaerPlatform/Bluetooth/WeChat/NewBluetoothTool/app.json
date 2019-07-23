@@ -3,7 +3,8 @@
     "pages/index/index",
     "pages/logs/logs",
     "pages/bleinfo/bleinfo",
-    "pages/connection/connection"
+    "pages/connection/connection",
+    "pages/characteristic/characteristic"
   ],
   "window": {
     "backgroundTextStyle": "light",

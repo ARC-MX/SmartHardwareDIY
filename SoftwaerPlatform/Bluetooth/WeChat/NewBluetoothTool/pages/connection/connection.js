@@ -81,8 +81,6 @@ Page({
 
   },
 
-
-
   getBLEDeviceServices(deviceId) {
     wx.getBLEDeviceServices({
       deviceId,
@@ -114,7 +112,7 @@ Page({
       serviceId,
       success: (res) => {
         console.log("------获取蓝牙设备(" + deviceId + ")主服务(" + serviceId + ")特征值------\n", res, res.characteristics)
-        
+
         //记录当前服务下的所有特征值
         this.setData({
           currentCharacteristics: res.characteristics
@@ -133,17 +131,6 @@ Page({
             })
           }
 
-          //该特征值支持的操作类型可写
-          if (item.properties.write) {
-            this.setData({
-              canWrite: true
-            })
-            this._deviceId = deviceId
-            this._serviceId = serviceId
-            this._characteristicId = item.uuid
-            //写入操作
-            // this.writeBLECharacteristicValue()
-          }
           //该特征值是否支持 notify（通知） 或 indicate（指示） 操作
           if (item.properties.notify || item.properties.indicate) {
             wx.notifyBLECharacteristicValueChange({
@@ -161,33 +148,38 @@ Page({
         console.error("------获取蓝牙设备(" + deviceId + ")主服务(" + serviceId + ")特征值失败------", res)
       }
     })
-/** 
+
     // 操作之前先监听，保证第一时间获取数据
     wx.onBLECharacteristicValueChange((characteristic) => {
+      // 判断当前监听到的characteristic是否在 currentCharacteristic列表中
+      console.log(`characteristic ${characteristic.characteristicId} has changed, now is ${characteristic.value}`)
+      console.log(ab2hex(characteristic.value))
       const idx = inArray(this.data.currentCharacteristics, 'uuid', characteristic.characteristicId)
       const data = {}
-      if (idx === -1) {
+      if (idx === -1) { //监听到的characteristic不在当前列表中 手动添加
+
         data[`currentCharacteristics[${this.data.currentCharacteristics.length}]`] = {
           uuid: characteristic.characteristicId,
+          properties: characteristic.properties,
+
           value: ab2hex(characteristic.value)
-  
+
         }
       } else {
         data[`currentCharacteristics[${idx}]`] = {
           uuid: characteristic.characteristicId,
+          properties: characteristic.properties,
+
           value: ab2hex(characteristic.value)
         }
       }
-     
+
       //data[`currentCharacteristics[${this.data.currentCharacteristics.length}]`] = {
       //   uuid: characteristic.characteristicId,
       //   value: "........"
       // }
       this.setData(data)
     })
-
-*/
-    
   },
 
   stopBluetoothDevicesDiscovery: function(e) {
@@ -201,12 +193,46 @@ Page({
     })
   },
   onChange(event) {
-
     this.getBLEDeviceCharacteristics(this.data.deviceId, this.data.currentDeviceService[event.detail].uuid)
     this.setData({
       activeName: event.detail,
-      activeServiceId: this.data.currentDeviceService[event.detail]
+      activeServiceId: this.data.currentDeviceService[event.detail].uuid
     });
+  },
+  selectCharacteristic: function(e) {
+    const characteristicObject = e.currentTarget.dataset.characteristicsuuid;
+    console.log("characteristicObject:", characteristicObject)
+
+    if (characteristicObject.properties.read && !characteristicObject.properties.write) {
+      //读取低功耗蓝牙设备的特征值的二进制数据值
+      wx.readBLECharacteristicValue({
+        deviceId: this.data.deviceId,
+        serviceId: this.data.activeServiceId,
+        characteristicId: characteristicObject.uuid,
+        success(res) {
+          console.log('readBLECharacteristicValue:', res.errCode)
+        }
+      })
+    }
+    if (characteristicObject.properties.notify || characteristicObject.properties.indicate) {
+      wx.notifyBLECharacteristicValueChange({
+        deviceId: this.data.deviceId,
+        serviceId: this.data.activeServiceId,
+        characteristicId: characteristicObject.uuid,
+        state: true,
+        success(res) {
+          console.log('notifyBLECharacteristicValueChange success', res.errMsg)
+        }
+      })
+    }
+    //该特征值支持的操作类型可写
+    if (characteristicObject.properties.write) {
+      //将对象转为string
+      var characteristic = JSON.stringify(characteristicObject)
+      wx.navigateTo({
+        url: '../characteristic/characteristic?currentTarget=' + characteristic
+      })
+    }
   }
 
 })
