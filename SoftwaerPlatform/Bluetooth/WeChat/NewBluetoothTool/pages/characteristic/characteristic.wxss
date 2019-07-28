@@ -1,1 +1,66 @@
 /* pages/characteristic/characteristic.wxss */
+
+.flex-write {
+  display: flex;
+  height: auto;
+  justify-content: space-between;
+  border-color: rgb(235, 79, 31);
+  border-style: solid;
+  border-bottom: 1pt;
+  border-width: 1px 0 0 0;
+}
+
+.flex-write {
+  display: flex;
+  height: auto;
+  justify-content: space-between;
+}
+
+.flex-read {
+  display: flex;
+  height: auto;
+  justify-content: space-between;
+}
+
+.flex-speed {
+  display: flex;
+  height: auto;
+  justify-content: space-between;
+}
+
+.flex-words {
+  display: flex;
+  height: auto;
+  justify-content: space-between;
+}
+
+.flex-buletooth {
+  display: flex;
+  height: auto;
+  justify-content: space-between;
+}
+
+.flex-check {
+  display: flex;
+  height: auto;
+  justify-content: space-between;
+}
+
+.readText {
+  margin-bottom: 70rpx;
+  padding: 40rpx 0;
+  display: flex;
+  min-height: 300rpx;
+  background-color: #FFFFFF;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 30rpx;
+  color: #353535;
+  line-height: 2em;
+  border:1px solid #405f80;
+}
+
+.sendData {
+  margin-bottom: 20rpx;
+}

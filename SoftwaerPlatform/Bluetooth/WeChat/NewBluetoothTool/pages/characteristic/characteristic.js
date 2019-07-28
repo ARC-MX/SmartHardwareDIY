@@ -5,17 +5,28 @@ Page({
    * 页面的初始数据
    */
   data: {
-    currentCharacteristic:[],
+    currentDevice: [],
+    buletoothName:"",
+    connectMessage:"已连接",
+    readWords:0,
+    readSpeeds:0,
+    writeWords:0,
+    writeSpeeds:0,
+    connectFlag:"断开",
+    characteristic: []
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    var characteristic = JSON.parse(options.currentTarget);
+    var characteristic = JSON.parse(options.characteristic);
+    var device = JSON.parse(options.device);
     this.setData({
-      currentCharacteristic: characteristic
+      currentDevice: device,
+      characteristic: characteristic
     })
+
   },
 
   /**
@@ -65,5 +76,12 @@ Page({
    */
   onShareAppMessage: function () {
 
-  }
+  },
+
+  changeConnectedState: function () {
+
+  },
+  bindKeyInput: function () {
+
+  },
 })

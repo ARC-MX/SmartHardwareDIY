@@ -11,17 +11,17 @@
     <view class="flex-wrp-services" style="flex-direction:column;">
       <view class="flex-item services_type">服务类型：{{servicesType}}</view>
       <view class="flex-item services_isPrimary">是否主服务：{{item.isPrimary}}</view>
-          <view wx:for="{{currentCharacteristics}}" wx:key="index" data-characteristicsUUID="{{item}}"class="flex-wrp-characteristics" style="flex-direction:column;" bindtap="selectCharacteristic">
-            <view class="flex-item characteristicsUUID">uuid：{{item.uuid}}</view>
-            <view class="flex-Props" style="flex-direction:row;">
-            <view class="flex-item characteristicsProps">Props:</view>
-            <view class="flex-item characteristicsProps" wx-if="{{item.properties.read}}">读 </view>
-            <view class="flex-item characteristicsProps" wx-if="{{item.properties.write}}">写 </view>
-            <view class="flex-item characteristicsProps" wx-if="{{item.properties.notify}}">通知 </view>
-            <view class="flex-item characteristicsProps" wx-if="{{item.properties.indicate}}">指示</view>
-            </view>
-            <view class="flex-item characteristicsValue">Value:{{item.value}}</view>
-          </view>
+      <view wx:for="{{currentCharacteristics}}" wx:key="index" data-characteristic="{{item}}" class="flex-wrp-characteristics" style="flex-direction:column;" bindtap="selectCharacteristic">
+        <view class="flex-item characteristicsUUID">uuid：{{item.uuid}}</view>
+        <view class="flex-Props" style="flex-direction:row;">
+          <view class="flex-item characteristicsProps">Props:</view>
+          <view class="flex-item characteristicsProps" wx-if="{{item.properties.read}}">读 </view>
+          <view class="flex-item characteristicsProps" wx-if="{{item.properties.write}}">写 </view>
+          <view class="flex-item characteristicsProps" wx-if="{{item.properties.notify}}">通知 </view>
+          <view class="flex-item characteristicsProps" wx-if="{{item.properties.indicate}}">指示</view>
+        </view>
+        <view class="flex-item characteristicsValue">Value:{{item.value}}</view>
+      </view>
     </view>
   </van-collapse-item>
 </van-collapse>
