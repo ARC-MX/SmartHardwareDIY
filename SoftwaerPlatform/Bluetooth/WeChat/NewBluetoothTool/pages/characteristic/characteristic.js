@@ -10,8 +10,13 @@ Page({
     connectMessage:"已连接",
     readWords:0,
     readSpeeds:0,
+    readSpeedChecked:true,
+    readHexChecked:true,
     writeWords:0,
     writeSpeeds:0,
+    writepeedChecked: true,
+    writeHexChecked: true,
+    autoSendChecked:false,
     connectFlag:"断开",
     characteristic: []
   },
@@ -84,4 +89,30 @@ Page({
   bindKeyInput: function () {
 
   },
+  readSpeedCheckChange: function (event) {
+    this.setData({
+      readSpeedChecked: event.detail
+    });
+  },
+  readHexCheckChange: function (event) {
+    this.setData({
+      readHexChecked: event.detail
+    });
+  },
+  writeSpeedCheckChange: function (event) {
+    this.setData({
+      writeSpeedChecked: event.detail
+    });
+  },
+  writeHexCheckChange: function (event) {
+    this.setData({
+      writeHexChecked: event.detail
+    });
+  },
+  writeAutoSendCheckChange: function (event) {
+    this.setData({
+      autoSendChecked: event.detail
+    });
+  },
+
 })

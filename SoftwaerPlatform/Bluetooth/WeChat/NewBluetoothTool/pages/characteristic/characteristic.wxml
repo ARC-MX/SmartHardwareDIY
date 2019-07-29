@@ -1,14 +1,19 @@
 <!-- pages/characteristic/characteristic.wxml -->
 <view class="characteristic">
+
   <view class="flex-buletooth" style="flex-direction:row;">
-    <view class="flex-wrp-services" style="flex-direction:column;">
+    <view class="flex-buletoothName" style="flex-direction:column;">
       <view class="flex-item buletoothName">蓝牙名称:{{device.name}}</view>
       <view class="flex-item connectFlag">连接状态:{{connectMessage}}</view>
     </view>
     <van-button plain type="danger" bind:click="changeConnectedState">{{connectFlag}}</van-button>
   </view>
-  <view class="characteristic">UUID:{{characteristicUUID}}</view>
-  <view class="characteristic">Props:{{characteristicProps}}</view>
+
+  <view class="characteristic" style="flex-direction:column;">
+    <view>UUID:{{characteristicUUID}}</view>
+    <view>Props:{{characteristicProps}}</view>
+  </view>
+
   <view class="readView">
     <view class="flex-read" style="flex-direction:row;">
       <van-button class="flex-item readButton" plain type="danger">清空</van-button>
@@ -25,16 +30,17 @@
         <view class="flex-item connectFlag">{{readSpeeds}}KB/s</view>
       </view>
       <view class="flex-check" style="flex-direction:column;">
-        <van-checkbox value="{{ readSpeedChecked }}" checked-color="#07c160" bind:change="readCheckChange">
+        <van-checkbox class="flex-item" value="{{ readSpeedChecked }}" checked-color="#07c160" bind:change="readSpeedCheckChange">
           显示速度
         </van-checkbox>
-        <van-checkbox value="{{ readHexChecked }}" checked-color="#07c160" bind:change="readCheckChange">
+        <van-checkbox class="flex-item" value="{{ readHexChecked }}" checked-color="#07c160" bind:change="readHexCheckChange">
           HEX显示
         </van-checkbox>
       </view>
     </view>
     <text class="readText">{{readText}}</text>
   </view>
+
   <view class="writeView">
     <view class="flex-write" style="flex-direction:row;">
       <view class="flex-words" style="flex-direction:column;">
@@ -46,16 +52,16 @@
         <view class="flex-item connectFlag">{{writeSpeeds}}KB/s</view>
       </view>
       <view class="flex-check" style="flex-direction:column;">
-        <van-checkbox value="{{ writeSpeedChecked }}" checked-color="#07c160" bind:change="writeCheckChange">
+        <van-checkbox class="flex-item" value="{{ writeSpeedChecked }}" checked-color="#07c160" bind:change="writeSpeedCheckChange">
           显示速度
         </van-checkbox>
-        <van-checkbox value="{{ writeHexChecked }}" checked-color="#07c160" bind:change="writeCheckChange">
+        <van-checkbox class="flex-item" value="{{ writeHexChecked }}" checked-color="#07c160" bind:change="writeHexCheckChange">
           HEX显示
         </van-checkbox>
       </view>
     </view>
     <view class="flex-check" style="flex-direction:row;">
-      <van-checkbox value="{{ writeHexChecked }}" checked-color="#07c160" bind:change="writeCheckChange">
+      <van-checkbox value="{{ autoSendChecked }}" checked-color="#07c160" bind:change="writeAutoSendCheckChange">
         自动发送
       </van-checkbox>
       <view class="autoSend">
@@ -63,9 +69,9 @@
       </view>
       <view class="autoSend">毫秒</view>
     </view>
-    <view class="sendData">
-      <input class="sendData" bindinput="bindKeyInput" placeholder="请输入发送的内容" />
-    </view>
+
+    <input class="sendData" bindinput="bindKeyInput" placeholder="请输入发送的内容" />
+
     <view class="flex-write" style="flex-direction:row;">
       <van-button class="flex-item readButton" plain type="danger">清空</van-button>
       <van-button class="flex-item readButton" plain type="danger">清零</van-button>
@@ -74,4 +80,6 @@
     </view>
 
   </view>
+
+
 </view>

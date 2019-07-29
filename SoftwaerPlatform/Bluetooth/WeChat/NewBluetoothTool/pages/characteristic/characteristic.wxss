@@ -1,4 +1,4 @@
-/* pages/characteristic/characteristic.wxss */
+/* 
 
 .flex-write {
   display: flex;
@@ -9,11 +9,17 @@
   border-bottom: 1pt;
   border-width: 1px 0 0 0;
 }
+pages/characteristic/characteristic.wxss */
 
-.flex-write {
+.flex-buletooth {
   display: flex;
   height: auto;
   justify-content: space-between;
+  margin-bottom: 40rpx;
+}
+.characteristic{
+  height: auto;
+  margin-bottom: 15rpx;
 }
 
 .flex-read {
@@ -21,6 +27,18 @@
   height: auto;
   justify-content: space-between;
 }
+
+.flex-write {
+  display: flex;
+  height: auto;
+  justify-content: space-between;
+  margin-bottom: 15rpx;
+}
+
+.flex-item{
+  margin-bottom: 15rpx;
+}
+
 
 .flex-speed {
   display: flex;
@@ -34,20 +52,15 @@
   justify-content: space-between;
 }
 
-.flex-buletooth {
-  display: flex;
-  height: auto;
-  justify-content: space-between;
-}
-
 .flex-check {
   display: flex;
   height: auto;
   justify-content: space-between;
+  margin-bottom: 20rpx;
 }
 
 .readText {
-  margin-bottom: 70rpx;
+  margin-bottom: 30rpx;
   padding: 40rpx 0;
   display: flex;
   min-height: 300rpx;
@@ -60,7 +73,19 @@
   line-height: 2em;
   border:1px solid #405f80;
 }
-
+.autoSend{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+ 
+}
+.autoSendTime{
+    border:1px solid #405f80;
+    min-height: 70rpx;
+}
 .sendData {
-  margin-bottom: 20rpx;
+ margin-bottom: 30rpx;
+  min-height: 100rpx;
+  border:1px solid #405f80;
 }

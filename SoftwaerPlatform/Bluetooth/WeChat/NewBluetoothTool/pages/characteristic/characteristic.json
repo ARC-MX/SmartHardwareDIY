@@ -7,6 +7,7 @@
     "van-nav-bar": "/dist/nav-bar/index",
     "van-area": "/dist/area/index",
     "van-collapse": "/dist/collapse/index",
+    "van-checkbox": "/dist/checkbox/index",
     "van-collapse-item": "/dist/collapse-item/index"
   },
   "backgroundTextStyle": "dark",
