@@ -16,9 +16,9 @@
 
   <view class="readView">
     <view class="flex-read" style="flex-direction:row;">
-      <van-button class="flex-item readButton" plain type="danger">清空</van-button>
-      <van-button class="flex-item readButton" plain type="danger">清零</van-button>
-      <van-button class="flex-item readButton" plain type="danger">读值</van-button>
+      <van-button class="flex-item readButton" bind:click="textClean"    plain type="danger">清空</van-button>
+      <van-button class="flex-item readButton" bind:click="readNumClean" plain type="danger">清零</van-button>
+      <van-button class="flex-item readButton" bind:click="readText"     plain type="danger">读值</van-button>
     </view>
     <view class="flex-read" style="flex-direction:row;">
       <view class="flex-words" style="flex-direction:column;">
@@ -38,7 +38,7 @@
         </van-checkbox>
       </view>
     </view>
-    <text class="readText">{{readText}}</text>
+    <text class="readText">{{readValue}}</text>
   </view>
 
   <view class="writeView">
@@ -65,21 +65,22 @@
         自动发送
       </van-checkbox>
       <view class="autoSend">
-        <input class="autoSendTime" bindinput="bindKeyInput" placeholder="60" />
+        <input class="autoSendTime" bindinput="bindKeyInputTime" value="{{inputTime}}"/>
       </view>
       <view class="autoSend">毫秒</view>
     </view>
 
-    <input class="sendData" bindinput="bindKeyInput" placeholder="请输入发送的内容" />
+    <input class="inputData" bindinput="bindKeyInputData" placeholder="请输入发送的内容" value="{{inputValue}}"/>
 
     <view class="flex-write" style="flex-direction:row;">
-      <van-button class="flex-item readButton" plain type="danger">清空</van-button>
-      <van-button class="flex-item readButton" plain type="danger">清零</van-button>
-      <van-button class="flex-item readButton" plain type="danger">输入完成</van-button>
-      <van-button class="flex-item readButton" plain type="danger">发送</van-button>
+      <van-button class="flex-item writeButton" bind:click="inputClean"   plain type="danger">清空</van-button>
+      <van-button class="flex-item writeButton" bind:click="writeNumClean"plain type="danger">清零</van-button>
+      <van-button class="flex-item writeButton" bind:click="send"         plain type="danger">发送</van-button>
     </view>
 
   </view>
 
-
+inputClean
+writeClear
+send   
 </view>

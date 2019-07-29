@@ -10,13 +10,16 @@ Page({
     connectMessage:"已连接",
     readWords:0,
     readSpeeds:0,
+    readValue:'',
     readSpeedChecked:true,
     readHexChecked:true,
     writeWords:0,
     writeSpeeds:0,
-    writepeedChecked: true,
+    inputTime:60,
+    writespeedChecked: true,
     writeHexChecked: true,
     autoSendChecked:false,
+    inputValue:"",
     connectFlag:"断开",
     characteristic: []
   },
@@ -113,6 +116,60 @@ Page({
     this.setData({
       autoSendChecked: event.detail
     });
+    if(autoSendChecked){
+      var intervalID = setInterval(function () {
+        that.send()
+      }, inputTime);
+    }else{
+      clearInterval(intervalID);
+    }
+
   },
+  textClean: function () {
+    this.setData({
+      inputValue: ""
+    })
+  }, 
+  readNumClean: function () {
+    this.setData({
+      readWords: 0
+    })
+  },
+
+  readText: function () {
+
+    //读取蓝牙回传信息
+  },   
+
+  bindKeyInputTime: function (e) {
+    this.setData({
+      inputTime: e.detail.value
+    })
+  },
+
+  bindKeyInputData: function (e) {
+    this.setData({
+      inputValue: e.detail.value
+    })
+  },
+
+  //输入内容清空
+ inputClean: function () {
+   this.setData({
+     inputValue: ""
+   })
+  },
+
+  //写入字节数清零
+  writeNumClean: function () {
+    this.setData({
+      writeWords:0
+    })
+  },
+
+  //向蓝牙发送字符串
+  send: function () {
+
+  },   
 
 })

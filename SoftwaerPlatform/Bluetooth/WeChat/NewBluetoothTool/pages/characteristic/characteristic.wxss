@@ -84,7 +84,7 @@ pages/characteristic/characteristic.wxss */
     border:1px solid #405f80;
     min-height: 70rpx;
 }
-.sendData {
+.inputData {
  margin-bottom: 30rpx;
   min-height: 100rpx;
   border:1px solid #405f80;
