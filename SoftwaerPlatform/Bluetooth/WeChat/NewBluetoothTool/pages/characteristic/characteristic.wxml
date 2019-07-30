@@ -42,6 +42,9 @@
         <van-checkbox class="flex-item" value="{{ readHexChecked }}" checked-color="#07c160" bind:change="readHexCheckChange">
           HEX显示
         </van-checkbox>
+        <van-checkbox class="flex-item" value="{{ readUtfChecked }}" checked-color="#07c160" bind:change="readUtfChange">
+          {{readUtf}}
+        </van-checkbox>
       </view>
     </view>
     <scroll-view class="readTextView" scroll-y scroll-top="{{}}" bindlongpress="toggleActionSheet">
@@ -65,6 +68,9 @@
         </van-checkbox>
         <van-checkbox class="flex-item" value="{{ writeHexChecked }}" checked-color="#07c160" bind:change="writeHexCheckChange">
           HEX显示
+        </van-checkbox>
+        <van-checkbox class="flex-item" value="{{ writeUtfChecked }}" checked-color="#07c160" bind:change="writeUtfChange">
+          {{writeUtf}}
         </van-checkbox>
       </view>
     </view>

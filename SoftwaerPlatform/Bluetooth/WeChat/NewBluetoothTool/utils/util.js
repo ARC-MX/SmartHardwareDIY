@@ -1,3 +1,5 @@
+var utils = require('./utfEx.js');
+
 const formatTime = date => {
   const year = date.getFullYear()
   const month = date.getMonth() + 1
@@ -53,8 +55,11 @@ function strToHexCharCode(str) {　　
 //16进制转字符串
 
 function hexCharCodeToStr(hexCharCodeStr) {　　
-  var trimedStr = hexCharCodeStr.trim();　　
+  console.log("hexCharCodeStr", hexCharCodeStr);
+  var trimedStr = hexCharCodeStr.trim();　　//去除字符串开头结尾空格
+  console.log("trimedStr", trimedStr);
   var rawStr = trimedStr.substr(0, 2).toLowerCase() === "0x"? trimedStr.substr(2):trimedStr;　　
+  console.log("rawStr", rawStr, rawStr.length);
   var len = rawStr.length;　　
   if (len % 2 !== 0) {　　　　
     alert("Illegal Format ASCII Code!");　　　　
@@ -63,12 +68,13 @@ function hexCharCodeToStr(hexCharCodeStr) {　　
   var curCharCode;　　
   var resultStr = [];　　
   for (var i = 0; i < len; i = i + 2) {　　　　
-    curCharCode = parseInt(rawStr.substr(i, 2), 16); // ASCII Code Value
-    　　　　
+    curCharCode = parseInt(rawStr.substr(i, 4), 16); // ASCII Code Value
     resultStr.push(String.fromCharCode(curCharCode));　　
   }　　
+  console.log("resultStr", resultStr);
   return resultStr.join("");
 }
+
 module.exports = {
   inArray: inArray,
   u8Array2hex: u8Array2hex,

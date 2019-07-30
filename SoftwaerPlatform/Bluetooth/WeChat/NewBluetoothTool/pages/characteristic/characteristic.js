@@ -1,7 +1,7 @@
 // pages/characteristic/characteristic.js
 
 var utils = require('../../utils/util.js');
-
+var utfEx = require('../../utils/utfEx.js');
 Page({
 
   /**
@@ -9,7 +9,6 @@ Page({
    */
   data: {
     currentDevice: [],
-    buletoothName: "",
     serviceID: "",
     characteristic: [],
     connectMessage: "已连接",
@@ -22,11 +21,15 @@ Page({
     actionSheetHidden: false,
     readSpeedChecked: true,
     readHexChecked: false,
+    readUtfChecked:true,
+    readUtf: "UTF16",
     writeWords: 0,
     writeSpeeds: 0,
     inputTime: 60,
     writeSpeedChecked: true,
     writeHexChecked: true,
+    writeUtfChecked: true,
+    writeUtf:"UTF16",
     autoSendChecked: false,
     inputValue: ""
 
@@ -168,6 +171,13 @@ Page({
     return readValue
   },
 
+  //设置UTF格式
+  readUtfChange: function (event) {
+    this.setData({
+      readUtfChecked: event.detail
+    });
+  },
+
   //设定长按监听事件--监听长按界面动作
 
   toggleActionSheet: function() {
@@ -184,6 +194,12 @@ Page({
   writeHexCheckChange: function(event) {
     this.setData({
       writeHexChecked: event.detail
+    });
+  },
+  //设置UTF格式
+  writeUtfChange: function (event) {
+    this.setData({
+      writeUtfChecked: event.detail
     });
   },
   writeAutoSendCheckChange: function(event) {
@@ -230,6 +246,7 @@ Page({
   send: function() {
 
   },
+
   //设置自动添加换行
   addBrEnable: function() {
     this.setData({
@@ -245,7 +262,10 @@ Page({
   },
 
   readValueProcess: function (characteristicValue){
-    var readValue = utils.u8Array2hex(characteristicValue);
+    var readValue = utils.u8Array2hex(characteristicValue).toUpperCase();
+    if(this.data.readHexChecked){
+      readValue = utils.hexCharCodeToStr(readValue)
+    }
     readValue = this.data.addSpaceFlag ? readValue + "\t" : readValue;
     readValue = this.data.addBrFlag ? readValue + "\n" : readValue;
     this.setData({
