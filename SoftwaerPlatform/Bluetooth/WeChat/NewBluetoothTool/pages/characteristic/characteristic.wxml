@@ -3,22 +3,28 @@
 
   <view class="flex-buletooth" style="flex-direction:row;">
     <view class="flex-buletoothName" style="flex-direction:column;">
-      <view class="flex-item buletoothName">蓝牙名称:{{device.name}}</view>
-      <view class="flex-item connectFlag">连接状态:{{connectMessage}}</view>
+      <view class="flex-item buletoothName">蓝牙名称: {{currentDevice.name}}</view>
+      <view class="flex-item connectFlag">连接状态: {{connectMessage}}</view>
     </view>
-    <van-button plain type="danger" bind:click="changeConnectedState">{{connectFlag}}</van-button>
+    <button plain type="warn" bindtap="changeConnectedState">{{connectFlag}}</button>
   </view>
 
-  <view class="characteristic" style="flex-direction:column;">
-    <view>UUID:{{characteristicUUID}}</view>
-    <view>Props:{{characteristicProps}}</view>
+  <view class="flex-characteristic" style="flex-direction:column;">
+    <view>UUID: {{characteristic.uuid}}</view>
+    <view class="flex-Props" style="flex-direction:row;">
+      <view>Props:</view>
+      <view class="characteristicsProps" wx-if="{{characteristic.properties.read}}"> 读 </view>
+      <view class="characteristicsProps" wx-if="{{characteristic.properties.write}}"> 写 </view>
+      <view class="characteristicsProps" wx-if="{{characteristic.properties.notify}}"> 通知 </view>
+      <view class="characteristicsProps" wx-if="{{characteristic.properties.indicate}}"> 指示 </view>
+    </view>
   </view>
 
   <view class="readView">
     <view class="flex-read" style="flex-direction:row;">
-      <van-button class="flex-item readButton" bind:click="textClean"    plain type="danger">清空</van-button>
-      <van-button class="flex-item readButton" bind:click="readNumClean" plain type="danger">清零</van-button>
-      <van-button class="flex-item readButton" bind:click="readText"     plain type="danger">读值</van-button>
+      <button class="flex-item readButton" bindtap="textClean" plain type="warn">清空</button>
+      <button class="flex-item readButton" bindtap="readNumClean" plain type="warn">清零</button>
+      <button class="flex-item readButton" bindtap="readText" disabled="{{!characteristic.properties.read}}" plain type="warn">读值</button>
     </view>
     <view class="flex-read" style="flex-direction:row;">
       <view class="flex-words" style="flex-direction:column;">
@@ -38,7 +44,9 @@
         </van-checkbox>
       </view>
     </view>
-    <text class="readText">{{readValue}}</text>
+    <scroll-view class="readTextView" scroll-y scroll-top="{{}}" bindlongpress="toggleActionSheet">
+      <text class="readText">{{readValue}}</text>
+    </scroll-view>
   </view>
 
   <view class="writeView">
@@ -65,22 +73,24 @@
         自动发送
       </van-checkbox>
       <view class="autoSend">
-        <input class="autoSendTime" bindinput="bindKeyInputTime" value="{{inputTime}}"/>
+        <input class="autoSendTime" bindinput="bindKeyInputTime" value="{{inputTime}}" />
       </view>
       <view class="autoSend">毫秒</view>
     </view>
 
-    <input class="inputData" bindinput="bindKeyInputData" placeholder="请输入发送的内容" value="{{inputValue}}"/>
+    <input class="inputData" bindinput="bindKeyInputData" placeholder="请输入发送的内容" value="{{inputValue}}" />
 
     <view class="flex-write" style="flex-direction:row;">
-      <van-button class="flex-item writeButton" bind:click="inputClean"   plain type="danger">清空</van-button>
-      <van-button class="flex-item writeButton" bind:click="writeNumClean"plain type="danger">清零</van-button>
-      <van-button class="flex-item writeButton" bind:click="send"         plain type="danger">发送</van-button>
+      <button class="flex-item writeButton" bindtap="inputClean" plain type="warn">清空</button>
+      <button class="flex-item writeButton" bindtap="writeNumClean" plain type="warn">清零</button>
+      <button class="flex-item writeButton" bindtap="send" plain type="warn">发送</button>
     </view>
 
   </view>
 
-inputClean
-writeClear
-send   
+  <van-action-sheet show="{{ actionSheetHidden }}" title="应用设置" bind:close="toggleActionSheet">
+    <van-switch-cell title="读取内容自动追加空格" checked="{{ addSpaceFlag }}" bind:change="addSpaceEnable" />
+    <van-switch-cell title="读取内容自动追加换行" checked="{{ addBrFlag }}" bind:change="addBrEnable" />
+  </van-action-sheet>
+
 </view>

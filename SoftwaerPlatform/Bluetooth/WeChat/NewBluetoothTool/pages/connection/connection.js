@@ -1,36 +1,15 @@
 // pages/connection/connection.js
 
-
-function inArray(arr, key, val) {
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i][key] === val) {
-      return i;
-    }
-  }
-  return -1;
-}
-
-// ArrayBuffer转16进度字符串示例
-function ab2hex(buffer) {
-  var hexArr = Array.prototype.map.call(
-    new Uint8Array(buffer),
-    function(bit) {
-      return ('00' + bit.toString(16)).slice(-2)
-    }
-  )
-  return hexArr.join('');
-}
-
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    deviceId: 0,
+    deviceId: "",
     currentDevice: [],
     currentDeviceService: [],
-    activeServiceId: 0,
+    activeServiceId: "",
     servicesType: "自定义",
     currentCharacteristics: [],
     activeName: 0,
@@ -64,7 +43,7 @@ Page({
         //获取蓝牙设备服务
         this.getBLEDeviceServices(deviceId)
       },
-      fail: function(res) {
+      fail: res=>{
         this.setData({
           connected: "连接失败",
           debugM: "关闭蓝牙服务\n" + res.errMsg,
@@ -212,8 +191,7 @@ Page({
     var characteristic = e.currentTarget.dataset.characteristic
     //将对象转为string
     wx.navigateTo({
-      url: '../characteristic/characteristic?characteristic=' + JSON.stringify(characteristic) +
-        '&device=' + JSON.stringify(this.data.currentDevice)
+      url: '../characteristic/characteristic?characteristic=' + JSON.stringify(characteristic) + '&serviceUUID=' + this.data.activeServiceId.uuid+'&device=' + JSON.stringify(this.data.currentDevice)
     })
   }
 

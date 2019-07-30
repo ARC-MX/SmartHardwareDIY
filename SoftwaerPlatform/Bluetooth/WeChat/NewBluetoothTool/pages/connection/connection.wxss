@@ -14,4 +14,12 @@
   display: flex;
   height: auto;
   justify-content: space-between;
+  white-space: pre;
+}
+
+.flex-properties {
+  display: flex;
+  height: auto;
+  white-space: pre;
+  color: rgb(216, 145, 14);
 }

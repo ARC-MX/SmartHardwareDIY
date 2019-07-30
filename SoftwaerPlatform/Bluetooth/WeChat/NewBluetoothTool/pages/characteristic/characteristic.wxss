@@ -3,7 +3,7 @@
 .flex-write {
   display: flex;
   height: auto;
-  justify-content: space-between;
+  justify-content: space-around;
   border-color: rgb(235, 79, 31);
   border-style: solid;
   border-bottom: 1pt;
@@ -12,80 +12,152 @@
 pages/characteristic/characteristic.wxss */
 
 .flex-buletooth {
+  margin-top: 30rpx;
   display: flex;
   height: auto;
+  width: 92%;
   justify-content: space-between;
-  margin-bottom: 40rpx;
+  align-items: center;
+  margin-bottom: 20rpx;
+  white-space: pre;
 }
-.characteristic{
+
+.flex-characteristic {
   height: auto;
   margin-bottom: 15rpx;
+  border: 1px solid rgb(18, 234, 241);
+  white-space: pre;
+  font-size: 32rpx;
+  border-radius: 5px;
+}
+
+.flex-Props {
+  display: flex;
+  height: auto;
+}
+
+.characteristicsProps {
+  color: rgb(216, 145, 14);
+  white-space: pre;
+  border-radius: 5px;
+}
+.readView {
+  margin-top: 20rpx;
+  height: auto;
+  background-color: rgb(216, 245, 242);
+  border: 1px solid rgb(199, 219, 247);
+  border-radius: 5px;
+}
+
+button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-color: rgb(241, 19, 19);
+  background: rgb(241, 19, 19);
+  font-size: 32rpx;
+  margin-left:0;
+  margin-right:0;
 }
 
 .flex-read {
+  margin-top: 20rpx;
   display: flex;
   height: auto;
-  justify-content: space-between;
-}
-
-.flex-write {
-  display: flex;
-  height: auto;
-  justify-content: space-between;
-  margin-bottom: 15rpx;
-}
-
-.flex-item{
-  margin-bottom: 15rpx;
-}
-
-
-.flex-speed {
-  display: flex;
-  height: auto;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
 .flex-words {
   display: flex;
   height: auto;
-  justify-content: space-between;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.flex-speed {
+  display: flex;
+  height: auto;
+  justify-content: space-around;
+  align-items: auto;
 }
 
 .flex-check {
   display: flex;
   height: auto;
-  justify-content: space-between;
+  justify-content: space-around;
   margin-bottom: 20rpx;
+  align-items: center;
 }
 
-.readText {
+.readTextView{
   margin-bottom: 30rpx;
-  padding: 40rpx 0;
+  margin-left: 1%;
+  width: 98%;
   display: flex;
-  min-height: 300rpx;
-  background-color: #FFFFFF;
+  height: 250rpx;
   justify-content: center;
   align-items: center;
-  text-align: center;
+  border: 1px solid #405f80;
+  border-radius: 5px;
+  background-color: #fff;
+  
+}
+.readText {
+  display: flex;
+  height: auto;
+  width: 98%;
+  background-color: #fff;
+  justify-content: center;
+  align-items: center;
+  text-align: justify;
   font-size: 30rpx;
   color: #353535;
-  line-height: 2em;
-  border:1px solid #405f80;
+  line-height: normal;
+
 }
-.autoSend{
+
+.writeView {
+  border-radius: 5px;
+  margin-top: 20rpx;
+  height: auto;
+  background-color: rgb(220, 248, 211);
+  border: 1px solid rgb(174, 181, 221);
+  justify-content:space-around;
+  align-items: center;
+  text-align: center;
+}
+
+.flex-write {
+  margin-top: 20rpx;
+  margin-bottom: 15rpx;
+  display: flex;
+  height: auto;
+  justify-content: space-around;
+}
+
+.flex-item {
+  margin-bottom: 15rpx;
+}
+
+.autoSend {
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
- 
 }
-.autoSendTime{
-    border:1px solid #405f80;
-    min-height: 70rpx;
+
+.autoSendTime {
+  border-radius: 3px;
+  border: 1px solid #405f80;
+  min-height: 70rpx;
 }
+
 .inputData {
- margin-bottom: 30rpx;
+  border-radius: 3px;
+  margin-bottom: 30rpx;
+  margin-left: 1%;
   min-height: 100rpx;
-  border:1px solid #405f80;
+  border: 1px solid #405f80;
+  width: 98%;
+  justify-content: center;
 }
