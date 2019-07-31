@@ -23,3 +23,12 @@
   white-space: pre;
   color: rgb(216, 145, 14);
 }
+
+.ServiceUUIDs {
+  background-color: rgb(38, 233, 126);
+  font-size: 30rpx;
+}
+
+.flex-wrp-services {
+  background-color: rgb(149, 231, 186);
+}

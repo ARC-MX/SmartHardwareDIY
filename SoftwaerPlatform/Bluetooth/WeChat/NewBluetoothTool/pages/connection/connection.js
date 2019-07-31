@@ -12,7 +12,7 @@ Page({
     activeServiceId: "",
     servicesType: "自定义",
     currentCharacteristics: [],
-    activeName: 0,
+    activeName: "",
     connected: " ...",
     debugM: "页面跳转"
   },

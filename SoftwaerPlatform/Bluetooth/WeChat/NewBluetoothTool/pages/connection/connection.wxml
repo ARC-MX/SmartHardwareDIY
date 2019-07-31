@@ -6,8 +6,8 @@
 <view class="deviceState">连接状态：{{connected}}</view>
 
 
-<van-collapse wx:for="{{currentDeviceService}}" wx:key="index" data-service-uuid="{{item}}" class="ServiceUUIDs" value="{{ activeName }}" bind:change="onChange" accordion>
-  <van-collapse-item title='{{item.uuid}}' name="{{index}}">
+<van-collapse wx:for="{{currentDeviceService}}" wx:key="index" data-service-uuid="{{item}}"  value="{{ activeName }}" bind:change="onChange" accordion>
+  <van-collapse-item class="ServiceUUIDs" title='{{item.uuid}}' name="{{index}}">
     <view class="flex-wrp-services" style="flex-direction:column;">
       <view class="flex-item services_type">服务类型：{{servicesType}}</view>
       <view class="flex-item services_isPrimary">是否主服务：{{item.isPrimary}}</view>
