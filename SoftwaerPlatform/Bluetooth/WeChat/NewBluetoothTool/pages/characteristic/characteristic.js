@@ -21,15 +21,15 @@ Page({
     actionSheetHidden: false,
     readSpeedChecked: true,
     readHexChecked: false,
-    readUtfChecked: true,
     writeWords: 0,
     writeSpeeds: 0,
-    inputTime: 60,
+    inputTime: 600,
     writeSpeedChecked: true,
     writeHexChecked: false,
-    writeUtfChecked: true,
     autoSendChecked: false,
-    inputValue: "",
+    inputValue: "123",
+    sendArrayBuffer: [],
+    intervalID:"",
     icon: {
       normal: '../../utils/normal.png',
       active: '../../utils/active.png',
@@ -163,26 +163,9 @@ Page({
     this.setData({
       readHexChecked: event.detail
     });
-    if (this.data.readHexChecked) {
-      var readValue = utils.strToHexCharCode(this.data.readValue)
-    } else {
-      var readValue = utils.hexCharCodeToStr(this.data.readValue)
-    }
-    this.setData({
-      readValue: readValue,
-    })
-    return readValue
-  },
-
-  //设置UTF格式
-  readUtfChange: function(event) {
-    this.setData({
-      readUtfChecked: event.detail,
-    });
   },
 
   //设定长按监听事件--监听长按界面动作
-
   toggleActionSheet: function() {
     this.setData({
       actionSheetHidden: !this.data.actionSheetHidden
@@ -194,36 +177,48 @@ Page({
       writeSpeedChecked: event.detail
     });
   },
+
+  //设定写入方式
   writeHexCheckChange: function(event) {
+    var value = this.data.inputValue;
+    //HEX显示
+    if (event.detail) {
+      value = utfEx.encode2utf8ArrayBuffer(value);
+      value = utfEx.u8Array2string(value).toUpperCase();
+    
+    } else {
+      value = utfEx.hexString2ArrayBuffer(value);
+      value = utfEx.decode2utf8(value);
+    }
+    
     this.setData({
-      writeHexChecked: event.detail
+      writeHexChecked: event.detail,
+      inputValue: value
     });
   },
-  //设置UTF格式
-  writeUtfChange: function(event) {
-    this.setData({
-      writeUtfChecked: event.detail,
-    });
-  },
+
+  //设置自动写入
   writeAutoSendCheckChange: function(event) {
     this.setData({
       autoSendChecked: event.detail
     });
-    if (autoSendChecked) {
-      var intervalID = setInterval(function() {
-        that.send()
-      }, inputTime);
+    var _this = this
+    if (_this.data.autoSendChecked) {
+      _this.data.intervalID = setInterval(_this.send, _this.data.inputTime);
+      console.log("开启自动发送功能，定时" + _this.data.inputTime+" ms 发送一次")
     } else {
-      clearInterval(intervalID);
+      clearInterval(_this.data.intervalID);
     }
   },
 
+  //设定自动写入时间
   bindKeyInputTime: function(e) {
     this.setData({
-      inputTime: e.detail.value
+      inputTime: e.detail.value,
     })
   },
 
+  //设定写入数据
   bindKeyInputData: function(e) {
     this.setData({
       inputValue: e.detail.value
@@ -246,6 +241,13 @@ Page({
 
   //向蓝牙发送字符串
   send: function() {
+    this.writeValueProcess(this.data.inputValue);
+    wx.writeBLECharacteristicValue({
+      deviceId: this.data.currentDevice.deviceId,
+      serviceId: this.data.serviceID,
+      characteristicId: this.data.characteristic.uuid,
+      value: this.data.sendArrayBuffer,
+    })
 
   },
 
@@ -263,15 +265,13 @@ Page({
     })
   },
 
+  //读取数据处理
   readValueProcess: function(characteristicValue) {
     var readValue = utfEx.u8Array2string(characteristicValue).toUpperCase();
-    console.log("原始数据",readValue)
+    console.log("原始数据", readValue)
     if (!this.data.readHexChecked) {
-      //utf16编码
-      if (this.data.readUtfChecked) {
-        readValue = utfEx.decode2utf8(characteristicValue)
-        console.log("UTF8解码", readValue)
-      }
+      readValue = utfEx.decode2utf8(characteristicValue)
+      console.log("UTF8解码", readValue)
     }
     readValue = this.data.addSpaceFlag ? readValue + "\t" : readValue;
     readValue = this.data.addBrFlag ? readValue + "\n" : readValue;
@@ -279,5 +279,21 @@ Page({
       readValue: this.data.readValue + readValue,
       readWords: this.data.readWords + 1
     })
+  },
+
+  //写入数据处理
+  writeValueProcess: function(value) {
+    var sendArrayBuffer = [];
+    if (!this.data.writeHexChecked) {
+      sendArrayBuffer = utfEx.encode2utf8ArrayBuffer(value);
+      console.log("当前以HEX形式发送：", sendArrayBuffer);
+    } else {
+      sendArrayBuffer = utfEx.hexString2ArrayBuffer(value);
+      console.log("当前以字符串编码形式发送：", sendArrayBuffer);
+    }
+    this.setData({
+      sendArrayBuffer: sendArrayBuffer,
+    });
+    console.log("HEX值等于：", value, "sendArrayBuffer值等于：", sendArrayBuffer)
   }
 })

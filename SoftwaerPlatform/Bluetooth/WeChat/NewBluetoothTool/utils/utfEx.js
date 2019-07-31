@@ -26,11 +26,28 @@ function u8Array2string(buffer) {
   //创建一个新数组，使用 map 方法获取字符串中每个字符所对应的 ASCII 码组成的数组：
   var hexArr = Array.prototype.map.call(
     new Uint8Array(buffer),
-    function (bit) {
+    function(bit) {
       return ('00' + bit.toString(16)).slice(-2)
     }
   )
   return hexArr.join('');
+}
+
+function hexString2ArrayBuffer(hexString) {
+  var pos = 0;
+  var len = hexString.length;
+  if (len % 2 != 0) {
+    return null;
+  }
+  len /= 2;
+  var hexA = new Array();
+  for (var i = 0; i < len; i++) {
+    var s = hexString.substr(pos, 2);
+    var v = parseInt(s, 16);
+    hexA.push(v);
+    pos += 2;
+  }
+  return new Uint8Array(hexA).buffer;
 }
 
 function decode2utf8(arr) {
@@ -58,8 +75,29 @@ function decode2utf8(arr) {
   return unicodeString
 };
 
+function encode2utf8ArrayBuffer(str) {
+  var result = new Array();
+  var k = 0;
+  for (var i = 0; i < str.length; i++) {
+    var j = encodeURI(str[i]);
+    if (j.length == 1) {
+      // 未转换的字符
+      result[k++] = j.charCodeAt(0);
+    } else {
+      // 转换成%XX形式的字符
+      var bytes = j.split("%");
+      for (var l = 1; l < bytes.length; l++) {
+        result[k++] = parseInt("0x" + bytes[l]);
+      }
+    }
+  }
+  return new Uint8Array(result).buffer;
+}
+
 module.exports = {
   inArray: inArray,
   u8Array2string: u8Array2string,
-  decode2utf8: decode2utf8
+  hexString2ArrayBuffer: hexString2ArrayBuffer,
+  decode2utf8: decode2utf8,
+  encode2utf8ArrayBuffer: encode2utf8ArrayBuffer
 }
