@@ -11,69 +11,55 @@
  * utf8 = utf16to8(utf16);
  * utf16 = utf16to8(utf8);
  */
+// ArrayBuffer转16进制字符串示例
 
-function utf16to8(str) {
-  var out, i, len, c;
-  out = "";
-  len = str.length;
-  for (i = 0; i < len; i++) {
-    c = str.charCodeAt(i);
-    if ((c >= 0x0001) && (c <= 0x007F)) {
-      out += str.charAt(i);
-    } else if (c > 0x07FF) {
-      out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F));
-      out += String.fromCharCode(0x80 | ((c >> 6) & 0x3F));
-      out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
-    } else {
-      out += String.fromCharCode(0xC0 | ((c >> 6) & 0x1F));
-      out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+function inArray(arr, key, val) {
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i][key] === val) {
+      return i;
     }
   }
-  return out;
+  return -1;
 }
 
-function utf8to16(str) {
-  var out, i, len, c;
-  var char2, char3;
+function u8Array2string(buffer) {
+  //创建一个新数组，使用 map 方法获取字符串中每个字符所对应的 ASCII 码组成的数组：
+  var hexArr = Array.prototype.map.call(
+    new Uint8Array(buffer),
+    function (bit) {
+      return ('00' + bit.toString(16)).slice(-2)
+    }
+  )
+  return hexArr.join('');
+}
 
-  out = "";
-  len = str.length;
-  i = 0;
-  while (i < len) {
-    c = str.charCodeAt(i++);
-    switch (c >> 4) {
-      case 0:
-      case 1:
-      case 2:
-      case 3:
-      case 4:
-      case 5:
-      case 6:
-      case 7:
-        // 0xxxxxxx
-        out += str.charAt(i - 1);
-        break;
-      case 12:
-      case 13:
-        // 110x xxxx   10xx xxxx
-        char2 = str.charCodeAt(i++);
-        out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
-        break;
-      case 14:
-        // 1110 xxxx  10xx xxxx  10xx xxxx
-        char2 = str.charCodeAt(i++);
-        char3 = str.charCodeAt(i++);
-        out += String.fromCharCode(((c & 0x0F) << 12) |
-          ((char2 & 0x3F) << 6) |
-          ((char3 & 0x3F) << 0));
-        break;
+function decode2utf8(arr) {
+  if (typeof arr === 'string') {
+    return arr;
+  }
+  var unicodeString = '';
+  var _arr = new Uint8Array(arr);
+  for (var i = 0; i < _arr.length; i++) {
+    var one = _arr[i].toString(2);
+    var v = one.match(/^1+?(?=0)/);
+
+    if (v && one.length === 8) {
+      var bytesLength = v[0].length;
+      var store = _arr[i].toString(2).slice(7 - bytesLength);
+      for (var st = 1; st < bytesLength; st++) {
+        store += _arr[st + i].toString(2).slice(2)
+      }
+      unicodeString += String.fromCharCode(parseInt(store, 2));
+      i += bytesLength - 1;
+    } else {
+      unicodeString += String.fromCharCode(_arr[i]);
     }
   }
+  return unicodeString
+};
 
-  module.exports = {
-    utf16to8: utf16to8,
-    utf8to16: utf8to16
-  }
-
-  return out;
+module.exports = {
+  inArray: inArray,
+  u8Array2string: u8Array2string,
+  decode2utf8: decode2utf8
 }

@@ -97,7 +97,8 @@ static void gatts_profile_b_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
 /* One gatt-based profile one app_id and one gatts_if, this array will store the gatts_if returned by ESP_GATTS_REG_EVT */
 static struct gatts_profile_inst gl_profile_tab[PROFILE_NUM] = {};
 
-static void struct_init(){
+static void struct_init()
+{
 
     //esp_attr_value_t  gatts_demo_char1_val
     {
@@ -173,7 +174,8 @@ void example_write_event_env(esp_gatt_if_t gatts_if, prepare_type_env_t *prepare
 void example_exec_write_event_env(prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param);
 
 //注册GAP连接事件
-static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param){
+static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param)
+{
     switch (event)
     {
 #ifdef CONFIG_SET_RAW_ADV_DATA
@@ -238,7 +240,8 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
     }
 }
 
-void example_write_event_env(esp_gatt_if_t gatts_if, prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param){
+void example_write_event_env(esp_gatt_if_t gatts_if, prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param)
+{
     printf("************************ example_write_event_env *******************************\n");
     esp_gatt_status_t status = ESP_GATT_OK;
     if (param->write.need_rsp)
@@ -295,7 +298,8 @@ void example_write_event_env(esp_gatt_if_t gatts_if, prepare_type_env_t *prepare
     }
 }
 
-void example_exec_write_event_env(prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param){
+void example_exec_write_event_env(prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param)
+{
 
     printf("----------------------------- example_exec_write_event_env -----------------------------\n");
     if (param->exec_write.exec_write_flag == ESP_GATT_PREP_WRITE_EXEC)
@@ -314,14 +318,16 @@ void example_exec_write_event_env(prepare_type_env_t *prepare_write_env, esp_ble
     prepare_write_env->prepare_len = 0;
 }
 
-static void set_gatt_rsp(esp_gatt_rsp_t *rsp, string value){
+static void set_gatt_rsp(esp_gatt_rsp_t *rsp, string value)
+{
     rsp->attr_value.len = value.length(); //数据长度
     stringstream stream(value);
     stream >> rsp->attr_value.value;
 }
 
 //注册的ProflieA回调
-static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param){
+static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param)
+{
     switch (event)
     {
     case ESP_GATTS_REG_EVT:
@@ -367,13 +373,14 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         break;
     }
     //GATT读取事件
-    case ESP_GATTS_READ_EVT:{
+    case ESP_GATTS_READ_EVT:
+    {
         ESP_LOGI(GATTS_TAG, "GATT_READ_EVT, conn_id %d, trans_id %d, handle %d\n", param->read.conn_id, param->read.trans_id, param->read.handle);
         esp_gatt_rsp_t rsp;
-        memset(&rsp, 0, sizeof(esp_gatt_rsp_t));    //清空请求内存
-        rsp.attr_value.handle = param->read.handle; //attribute handle属性句柄
-        set_gatt_rsp(&rsp, response_message_A);     //设定GATT回复内容
-        esp_ble_gatts_send_response(gatts_if, param->read.conn_id, param->read.trans_id, ESP_GATT_OK, &rsp);        //发送回复
+        memset(&rsp, 0, sizeof(esp_gatt_rsp_t));                                                             //清空请求内存
+        rsp.attr_value.handle = param->read.handle;                                                          //attribute handle属性句柄
+        set_gatt_rsp(&rsp, response_message_A);                                                              //设定GATT回复内容
+        esp_ble_gatts_send_response(gatts_if, param->read.conn_id, param->read.trans_id, ESP_GATT_OK, &rsp); //发送回复
         break;
     }
     //写入事件
@@ -385,6 +392,9 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         {
             ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, value len %d, value : ", param->write.len);
             esp_log_buffer_hex(GATTS_TAG, param->write.value, param->write.len); //记录写入数据
+
+            printf("......%s , %2d........\n", param->write.value, (int)param->write.len);
+
             printf("......%2d , %2d........\n", (int)param->write.value[1], (int)param->write.value[0]);
             if (gl_profile_tab[PROFILE_A_APP_ID].descr_handle == param->write.handle && param->write.len == 2)
             {
@@ -612,7 +622,10 @@ static void gatts_profile_b_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         if (!param->write.is_prep)
         {
             ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, value len %d, value :", param->write.len);
+            
             esp_log_buffer_hex(GATTS_TAG, param->write.value, param->write.len);
+
+            printf("......%s , %2d........\n", param->write.value, (int)param->write.len);
             if (gl_profile_tab[PROFILE_B_APP_ID].descr_handle == param->write.handle && param->write.len == 2)
             {
                 uint16_t descr_value = param->write.value[1] << 8 | param->write.value[0];

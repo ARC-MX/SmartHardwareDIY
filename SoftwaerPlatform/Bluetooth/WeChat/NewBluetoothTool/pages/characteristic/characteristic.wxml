@@ -36,14 +36,16 @@
         <view class="flex-item connectFlag">{{readSpeeds}}KB/s</view>
       </view>
       <view class="flex-check" style="flex-direction:column;">
-        <van-checkbox class="flex-item" value="{{ readSpeedChecked }}" checked-color="#07c160" bind:change="readSpeedCheckChange">
+        <van-checkbox style="margin-bottom: 10rpx;" class="flex-checkbox" value="{{ readSpeedChecked }}" checked-color="#07c160" bind:change="readSpeedCheckChange">
           显示速度
         </van-checkbox>
-        <van-checkbox class="flex-item" value="{{ readHexChecked }}" checked-color="#07c160" bind:change="readHexCheckChange">
-          HEX显示
+        <van-checkbox use-icon-slot class="flex-checkbox" value="{{ readHexChecked }}" checked-color="#07c160" bind:change="readHexCheckChange">
+          {{readHexChecked? "HEX显示 " : "字符串显示"}}
+          <image style="width: 40rpx; height: 40rpx; " slot="icon" src="{{ readHexChecked ? icon.active : icon.normal }}" />
         </van-checkbox>
-        <van-checkbox class="flex-item" value="{{ readUtfChecked }}" checked-color="#07c160" bind:change="readUtfChange">
-          {{readUtf}}
+        <van-checkbox disabled="{{readHexChecked}}" use-icon-slot class="flex-checkbox" value="{{ readUtfChecked }}" checked-color="#07c160" bind:change="readUtfChange">
+          {{readUtfChecked ? "UTF8解码" : "未解码"}}
+          <image style="width: 40rpx; height: 40rpx; " slot="icon" src="{{readHexChecked?icon.disable: readUtfChecked ? icon.active : icon.normal }}" />
         </van-checkbox>
       </view>
     </view>
@@ -63,18 +65,20 @@
         <view class="flex-item connectFlag">{{writeSpeeds}}KB/s</view>
       </view>
       <view class="flex-check" style="flex-direction:column;">
-        <van-checkbox class="flex-item" value="{{ writeSpeedChecked }}" checked-color="#07c160" bind:change="writeSpeedCheckChange">
+        <van-checkbox style="margin-bottom: 10rpx;" class="flex-checkbox" value="{{ writeSpeedChecked }}" checked-color="#07c160" bind:change="writeSpeedCheckChange">
           显示速度
         </van-checkbox>
-        <van-checkbox class="flex-item" value="{{ writeHexChecked }}" checked-color="#07c160" bind:change="writeHexCheckChange">
-          HEX显示
+        <van-checkbox use-icon-slot class="flex-checkbox" value="{{ writeHexChecked }}" checked-color="#07c160" bind:change="writeHexCheckChange">
+          {{writeHexChecked? "HEX显示 " : "字符串显示"}}
+          <image style="width: 40rpx; height: 40rpx; " slot="icon" src="{{ writeHexChecked ? icon.active : icon.normal }}" />
         </van-checkbox>
-        <van-checkbox class="flex-item" value="{{ writeUtfChecked }}" checked-color="#07c160" bind:change="writeUtfChange">
-          {{writeUtf}}
+        <van-checkbox disabled="{{writeHexChecked}}" use-icon-slot class="flex-checkbox" value="{{ writeUtfChecked }}" checked-color="#07c160" bind:change="writeUtfChange">
+          {{writeUtfChecked?  "UTF8编码" : "未编码"}}
+          <image style="width: 40rpx; height: 40rpx; " slot="icon" src="{{writeHexChecked ? icon.disable: writeUtfChecked ? icon.active : icon.normal }}" />
         </van-checkbox>
       </view>
     </view>
-    <view class="flex-check" style="flex-direction:row;">
+    <view class="flex-autoSend" style="flex-direction:row;">
       <van-checkbox value="{{ autoSendChecked }}" checked-color="#07c160" bind:change="writeAutoSendCheckChange">
         自动发送
       </van-checkbox>

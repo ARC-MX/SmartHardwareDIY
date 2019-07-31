@@ -14,24 +14,27 @@ Page({
     connectMessage: "已连接",
     connectFlag: "断开",
     addBrFlag: false,
-    addSpaceFlag:true,
+    addSpaceFlag: true,
     readWords: 0,
     readSpeeds: 0,
-    readValue: '',
+    readValue: "",
     actionSheetHidden: false,
     readSpeedChecked: true,
     readHexChecked: false,
-    readUtfChecked:true,
-    readUtf: "UTF16",
+    readUtfChecked: true,
     writeWords: 0,
     writeSpeeds: 0,
     inputTime: 60,
     writeSpeedChecked: true,
-    writeHexChecked: true,
+    writeHexChecked: false,
     writeUtfChecked: true,
-    writeUtf:"UTF16",
     autoSendChecked: false,
-    inputValue: ""
+    inputValue: "",
+    icon: {
+      normal: '../../utils/normal.png',
+      active: '../../utils/active.png',
+      disable: '../../utils/disable.png'
+    }
 
   },
 
@@ -160,9 +163,9 @@ Page({
     this.setData({
       readHexChecked: event.detail
     });
-    if(this.data.readHexChecked){
+    if (this.data.readHexChecked) {
       var readValue = utils.strToHexCharCode(this.data.readValue)
-    }else{
+    } else {
       var readValue = utils.hexCharCodeToStr(this.data.readValue)
     }
     this.setData({
@@ -172,9 +175,9 @@ Page({
   },
 
   //设置UTF格式
-  readUtfChange: function (event) {
+  readUtfChange: function(event) {
     this.setData({
-      readUtfChecked: event.detail
+      readUtfChecked: event.detail,
     });
   },
 
@@ -197,9 +200,9 @@ Page({
     });
   },
   //设置UTF格式
-  writeUtfChange: function (event) {
+  writeUtfChange: function(event) {
     this.setData({
-      writeUtfChecked: event.detail
+      writeUtfChecked: event.detail,
     });
   },
   writeAutoSendCheckChange: function(event) {
@@ -213,7 +216,6 @@ Page({
     } else {
       clearInterval(intervalID);
     }
-
   },
 
   bindKeyInputTime: function(e) {
@@ -261,10 +263,15 @@ Page({
     })
   },
 
-  readValueProcess: function (characteristicValue){
-    var readValue = utils.u8Array2hex(characteristicValue).toUpperCase();
-    if(this.data.readHexChecked){
-      readValue = utils.hexCharCodeToStr(readValue)
+  readValueProcess: function(characteristicValue) {
+    var readValue = utfEx.u8Array2string(characteristicValue).toUpperCase();
+    console.log("原始数据",readValue)
+    if (!this.data.readHexChecked) {
+      //utf16编码
+      if (this.data.readUtfChecked) {
+        readValue = utfEx.decode2utf8(characteristicValue)
+        console.log("UTF8解码", readValue)
+      }
     }
     readValue = this.data.addSpaceFlag ? readValue + "\t" : readValue;
     readValue = this.data.addBrFlag ? readValue + "\n" : readValue;

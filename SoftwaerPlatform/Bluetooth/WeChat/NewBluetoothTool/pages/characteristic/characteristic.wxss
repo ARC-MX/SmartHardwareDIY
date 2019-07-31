@@ -41,6 +41,7 @@ pages/characteristic/characteristic.wxss */
   white-space: pre;
   border-radius: 5px;
 }
+
 .readView {
   margin-top: 20rpx;
   height: auto;
@@ -56,8 +57,8 @@ button {
   border-color: rgb(241, 19, 19);
   background: rgb(241, 19, 19);
   font-size: 32rpx;
-  margin-left:0;
-  margin-right:0;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .flex-read {
@@ -79,20 +80,21 @@ button {
   height: auto;
   justify-content: space-around;
   align-items: auto;
+  
 }
 
 .flex-check {
   display: flex;
   height: auto;
+  width: 240rpx;
   justify-content: space-around;
-  margin-bottom: 20rpx;
-  align-items: center;
+  align-items: flex-start;
 }
 
-.readTextView{
-  margin-bottom: 30rpx;
+.readTextView {
+  margin-bottom: 10rpx;
   margin-left: 1%;
-  width: 98%;
+  min-width: 98%;
   display: flex;
   height: 250rpx;
   justify-content: center;
@@ -100,8 +102,8 @@ button {
   border: 1px solid #405f80;
   border-radius: 5px;
   background-color: #fff;
-  
 }
+
 .readText {
   display: flex;
   height: auto;
@@ -113,7 +115,6 @@ button {
   font-size: 30rpx;
   color: #353535;
   line-height: normal;
-
 }
 
 .writeView {
@@ -122,7 +123,7 @@ button {
   height: auto;
   background-color: rgb(220, 248, 211);
   border: 1px solid rgb(174, 181, 221);
-  justify-content:space-around;
+  justify-content: space-around;
   align-items: center;
   text-align: center;
 }
@@ -136,6 +137,15 @@ button {
 }
 
 .flex-item {
+  margin-bottom: 15rpx;
+}
+
+.flex-autoSend {
+  display: flex;
+  height: auto;
+  justify-content: space-around;
+  align-items: center;
+  text-align: center;
   margin-bottom: 15rpx;
 }
 
