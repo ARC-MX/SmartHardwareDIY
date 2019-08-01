@@ -1,4 +1,4 @@
-<!--pages/bleinfo/bleinfo.wxml-->
+<!--pages/bleinfo/bleinfo.wxml
 
 
 <wxs module="utils">
@@ -10,11 +10,14 @@
     return arr.length
   }
 </wxs>
+-->
 
 
-<view class="myView" bindlongpress="toggleActionSheet">
-  <scroll-view class="device_list" scroll-y="true" style="height: 100%" scroll-with-animation>
-    <view wx:for="{{bluetoothDevices}}" wx:key="index" data-device-id="{{item.deviceId}}" data-index='{{index}}' data-name="{{item.name || item.localName}}" bindtap="createBLEConnectionPage" class="device_item" hover-class="device_item_hover">
+<wxs module="utils" src="../../utils/util.wxs"></wxs>
+
+<view class="bleInfoView" bindlongpress="toggleActionSheet">
+  <scroll-view class="device_list" scroll-y="true" scroll-with-animation>
+    <view wx:for-items="{{bluetoothDevices}}" wx:key="index" data-device-id="{{item.deviceId}}" data-index='{{index}}' data-name="{{item.name || item.localName}}" bindtap="createBLEConnectionPage" class="device_item" hover-class="device_item_hover">
       <view class="flex-wrp" style="flex-direction:row;">
         <view class="flex-wrp-device" style="flex-direction:column;">
           <view class="flex-item ble_name">{{item.name}}</view>

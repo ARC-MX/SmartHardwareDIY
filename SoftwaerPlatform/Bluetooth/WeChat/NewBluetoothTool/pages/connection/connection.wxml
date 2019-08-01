@@ -1,34 +1,47 @@
 <!--pages/connection/connection.wxml-->
-
-<view class="deviceName">设备名称：{{currentDevice.name}}</view>
-<view class="deviceID">设备地址：{{currentDevice.deviceId}}</view>
-<view class="deviceState">信号质量：{{currentDevice.RSSI}}dBm</view>
-<view class="deviceState">连接状态：{{connected}}</view>
-
-
-<van-collapse wx:for="{{currentDeviceService}}" wx:key="index" data-service-uuid="{{item}}"  value="{{ activeName }}" bind:change="onChange" accordion>
-  <van-collapse-item class="ServiceUUIDs" title='{{item.uuid}}' name="{{index}}">
-    <view class="flex-wrp-services" style="flex-direction:column;">
-      <view class="flex-item services_type">服务类型：{{servicesType}}</view>
-      <view class="flex-item services_isPrimary">是否主服务：{{item.isPrimary}}</view>
-      <view wx:for="{{currentCharacteristics}}" wx:key="index" data-characteristic="{{item}}" class="flex-wrp-characteristics" style="flex-direction:column;" bindtap="selectCharacteristic">
-        <view class="flex-item characteristicsUUID">uuid：{{item.uuid}}</view>
-        <view class="flex-Props" style="flex-direction:row;">
-          <view>Props:</view>
-          <view class="flex-properties" style="flex-direction:row;">
-            <view class="characteristicsProps" wx-if="{{item.properties.read}}"> 读 </view>
-            <view class="characteristicsProps" wx-if="{{item.properties.write}}"> 写 </view>
-            <view class="characteristicsProps" wx-if="{{item.properties.notify}}"> 通知 </view>
-            <view class="characteristicsProps" wx-if="{{item.properties.indicate}}"> 指示 </view>
-          </view>
-        </view>
-        <view class="flex-item characteristicsValue">Value:{{item.value}}</view>
-      </view>
+<view class="connectionPage">
+  <view class="flex-device" style="flex-direction:column;">
+    <view class="flex-properties" style="flex-direction:row;">
+      <view>设备名称：</view>
+      <view class="deviceName">{{currentDevice.name}}</view>
     </view>
-  </van-collapse-item>
-</van-collapse>
+    <view class="flex-properties" style="flex-direction:row;">
+      <view>信号质量：</view>
+      <view class="deviceRSSI">{{currentDevice.RSSI}}dBm</view>
+    </view>
+    <view class="flex-properties" style="flex-direction:row;">
+      <view>广播数据：</view>
+      <view class="deviceAdvertis">{{deviceAdvertisData}}dBm</view>
+    </view>
+    <view class="flex-properties" style="flex-direction:row;">
+      <view>连接状态：</view>
+      <view class="deviceConnect">{{connected}}</view>
+    </view>
+  </view>
 
+  <van-collapse class="ServiceUUIDs" wx:for="{{currentDeviceService}}" wx:key="index" data-service-uuid="{{item}}" value="{{ activeName }}" bind:change="onChange" accordion>
+    <van-collapse-item border class="ServiceUUID" title='{{item.uuid}}' name="{{index}}">
+      <view class="flex-wrp-services" style="flex-direction:column;">
+        <view class="flex-item services_type">服务类型：{{servicesType}}</view>
+        <view class="flex-item services_isPrimary">是否主服务：{{item.isPrimary}}</view>
+        <view wx:for="{{currentCharacteristics}}" wx:key="index" data-characteristic="{{item}}" class="flex-wrp-characteristics" style="flex-direction:column;" bindtap="selectCharacteristic">
+          <view class="flex-item characteristicsUUID">uuid：{{item.uuid}}</view>
+          <view class="flex-Props" style="flex-direction:row;">
+            <view>Props:</view>
+            <view class="flex-properties" style="flex-direction:row;">
+              <view class="characteristicsProps" wx-if="{{item.properties.read}}"> 读 </view>
+              <view class="characteristicsProps" wx-if="{{item.properties.write}}"> 写 </view>
+              <view class="characteristicsProps" wx-if="{{item.properties.notify}}"> 通知 </view>
+              <view class="characteristicsProps" wx-if="{{item.properties.indicate}}"> 指示 </view>
+            </view>
+          </view>
+          <view class="flex-item characteristicsValue">Value:{{item.value}}</view>
+        </view>
+      </view>
+    </van-collapse-item>
+  </van-collapse>
 
+</view>
 
 
 <!--->

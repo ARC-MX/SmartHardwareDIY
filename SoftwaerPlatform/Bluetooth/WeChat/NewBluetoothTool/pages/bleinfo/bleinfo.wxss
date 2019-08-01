@@ -1,104 +1,92 @@
 /* pages/bleinfo/bleinfo.wxss */
 
-.content {
-  padding: 20px;
+.bleInfoView {
+  width: 100%;
+  height: 100%;
+  margin-top: 20rpx;
 }
-.setcollapse{
-    width: 100%;
-    height: 10rpx;
-    align-items: flex-end;
-    position: fixed;
-    bottom: 0;
- 
-}
-.setcollapse-item{
-    width: 100%;
-    height: 1%;
-    align-items: flex-end;
-    position: fixed;
-    top: 0;
- 
-}
-.myView{
 
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    top: 0;
-}
 .device_list {
-  height: 300px;
-  margin: 50px 5px;
-  margin-top: 0;
-  border: 1px solid #EEE;
-  border-radius: 5px;
-  width: auto;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 }
+
+.device_item {
+  height: auto;
+  border-width: thick 0 thin;
+  border-style: solid;
+  border-color: rgb(235, 79, 31);
+}
+
+.device_item_hover {
+  background-color: rgb(96, 233, 108);
+}
+
 .flex-wrp {
   display: flex;
   height: auto;
+  justify-content: space-between;
+}
 
- justify-content:space-between;
+.flex-wrp-device {
+  display: flex;
+  height: auto;
+}
 
-  border-color:rgb(235, 79, 31);
-  border-style: solid;  
-  border-bottom:1pt;
-  border-width:1px 0 0 0;
+.ble_name {
+  font-size: 22px;
+  color: rgb(241, 14, 7);
+  margin-left: 2%;
+}
 
-  }
- .ble_name{
+.ble_deviceId {
+  font-size: 12px;
+  color: rgb(8, 43, 238);
+  margin-left: 2%;
+}
 
-    font-size: 22px;
-    color :rgb(241, 14, 7);
- }
- .ble_deviceId{
+.ble_ServiceNumbers {
+  font-size: 12px;
+  color: rgb(11, 216, 79);
+  margin-left: 2%;
+}
 
+.ble_ServiceUUIDs {
+  display: flex;
+  font-size: 12px;
+  color: rgb(49, 199, 199);
+  margin-left: 2%;
+}
+
+.ble_ServiceUUID {
+  white-space: nowrap;
   font-size: 10px;
-  color :rgb(8, 230, 238);
- }
- .ble_UUIDs{
+  color: rgb(48, 145, 190);
+  margin-left: 4%;
+}
 
-  font-size: 10px;
-  color :rgb(14, 204, 211);
- }
- .ble_ServiceNumbers{
+.flex-wrp-RRSI {
+  align-items: center; /**子view垂直居中*/
+  vertical-align: baseline; /**垂直居中*/
+  display: flex;
+  height: auto;
+  color: rgb(53, 12, 236);
+  text-align: center;
+  justify-content: flex-end;
+}
 
-  font-size: 10px;
-  color :rgb(145, 236, 40);
- }
- .ble_ServiceUUIDs{
-      
-  font-size: 10px;
-  color :rgb(49, 199, 199);
- }
- .ble_ServiceUUID{
-   
-  font-size: 10px;
-  color :rgb(48, 145, 190);
- }
- .flex-wrp-device{
-    display: flex;
-    height: auto;
- }
- .flex-wrp-RRSI{
+.ble_RRSI {
+  font-size: 24px;
+}
 
-    align-items: center; /**子view垂直居中*/
-    vertical-align: baseline; /**垂直居中*/
-    display: flex;
-    height: auto;
-    color: rgb(53, 12, 236);
-    text-align:center;
-    justify-content:flex-end;
- }
- .ble_RRSI{
-    font-size: 24px;
-    justify-content: center; /**内容居中*/
- }
- .ble_RRSI_unit{
-    font-size: 10px;
-    justify-content: center; /**内容居中*/
- }
- .ble_RRSI_per{
-    font-size: 22px;
-    justify-content: center; /**内容居中*/
- }
+.ble_RRSI_unit {
+  font-size: 10px;
+  align-items: flex-end;
+  vertical-align: text-bottom; /**垂直居中*/
+}
+
+.ble_RRSI_per {
+  font-size: 22px;
+}

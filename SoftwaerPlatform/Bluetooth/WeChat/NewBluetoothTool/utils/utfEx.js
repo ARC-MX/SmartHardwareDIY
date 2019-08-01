@@ -73,7 +73,7 @@ function decode2utf8(arr) {
     }
   }
   return unicodeString
-};
+}
 
 function encode2utf8ArrayBuffer(str) {
   var result = new Array();

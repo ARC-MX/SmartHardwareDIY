@@ -22,8 +22,15 @@ uint8_t char1_str[] = {0x11, 0x22, 0x33};
 esp_gatt_char_prop_t a_property = 0;
 esp_gatt_char_prop_t b_property = 0;
 
+//读取回复数据
 static std::string response_message_A = "你好";
 static std::string response_message_B = "再见";
+//通知数据
+static std::string notifyAString = "123";
+static std::string notifyBString = "321";
+//指示数据
+static std::string indicateAString = "456";
+static std::string indicateBString = "654";
 
 esp_attr_value_t gatts_demo_char1_val;
 
@@ -392,10 +399,7 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         {
             ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, value len %d, value : ", param->write.len);
             esp_log_buffer_hex(GATTS_TAG, param->write.value, param->write.len); //记录写入数据
-
-            printf("......%s , %2d........\n", param->write.value, (int)param->write.len);
-
-            printf("......%2d , %2d........\n", (int)param->write.value[1], (int)param->write.value[0]);
+            printf("PROFILE_A......%s , %2d........\n", param->write.value, (int)param->write.len);
             if (gl_profile_tab[PROFILE_A_APP_ID].descr_handle == param->write.handle && param->write.len == 2)
             {
                 uint16_t descr_value = param->write.value[1] << 8 | param->write.value[0];
@@ -404,12 +408,9 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
                     if (a_property & ESP_GATT_CHAR_PROP_BIT_NOTIFY)
                     {
                         ESP_LOGI(GATTS_TAG, "notify enable");
-                        uint8_t notify_data[15] = {"A"};
-                        // for (int i = 0; i < sizeof(notify_data); ++i)
-                        // {
-                        //     notify_data[i] = i%0xff;
-                        // }
-                        //the size of notify_data[] need less than MTU size
+                        uint8_t notify_data[notifyAString.length()];
+                        strcpy((char *)notify_data, notifyAString.c_str());
+                        printf("PROFILE_A...... notify_data : %s  ，%4d\n", notify_data, sizeof(notify_data));
                         esp_ble_gatts_send_indicate(gatts_if, param->write.conn_id, gl_profile_tab[PROFILE_A_APP_ID].char_handle,
                                                     sizeof(notify_data), notify_data, false);
                     }
@@ -419,12 +420,8 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
                     if (a_property & ESP_GATT_CHAR_PROP_BIT_INDICATE)
                     {
                         ESP_LOGI(GATTS_TAG, "indicate enable");
-                        uint8_t indicate_data[15] = {"a"};
-                        // for (int i = 0; i < sizeof(indicate_data); ++i)
-                        // {
-                        //     indicate_data[i] = i%0xff;
-                        // }
-                        //the size of indicate_data[] need less than MTU size
+                        uint8_t indicate_data[ESP_GATT_MAX_ATTR_LEN];
+                        strcpy((char *)indicate_data, indicateAString.c_str());
                         esp_ble_gatts_send_indicate(gatts_if, param->write.conn_id, gl_profile_tab[PROFILE_A_APP_ID].char_handle,
                                                     sizeof(indicate_data), indicate_data, true);
                     }
@@ -469,10 +466,14 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
 
         esp_ble_gatts_start_service(gl_profile_tab[PROFILE_A_APP_ID].service_handle);
         a_property = ESP_GATT_CHAR_PROP_BIT_READ | ESP_GATT_CHAR_PROP_BIT_WRITE | ESP_GATT_CHAR_PROP_BIT_NOTIFY;
-        esp_err_t add_char_ret = esp_ble_gatts_add_char(gl_profile_tab[PROFILE_A_APP_ID].service_handle, &gl_profile_tab[PROFILE_A_APP_ID].char_uuid,
-                                                        ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE,
-                                                        a_property,
-                                                        &gatts_demo_char1_val, NULL);
+        //向服务添加characteristic
+        esp_err_t add_char_ret = esp_ble_gatts_add_char(gl_profile_tab[PROFILE_A_APP_ID].service_handle,  //service handle
+                                                         &gl_profile_tab[PROFILE_A_APP_ID].char_uuid,     //Characteristic UUID
+                                                        ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE,         //声明属性特征值的权限 
+                                                        a_property,                                       //特征值属性（读、写、通知）
+                                                        &gatts_demo_char1_val,                            //特征值
+                                                        NULL                                              //属性响应控制字节
+                                                        );                  
         if (add_char_ret)
         {
             ESP_LOGE(GATTS_TAG, "add char failed, error code =%x", add_char_ret);
@@ -508,7 +509,10 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         }
         // 调用此函数是为了添加特征描述符。完成后，将调用回调事件BTA_GATTS_ADD_DESCR_EVT来报告该描述符的状态和ID号。
         esp_err_t add_descr_ret = esp_ble_gatts_add_char_descr(gl_profile_tab[PROFILE_A_APP_ID].service_handle,
-                                                               &gl_profile_tab[PROFILE_A_APP_ID].descr_uuid, ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE, NULL, NULL);
+                                                            &gl_profile_tab[PROFILE_A_APP_ID].descr_uuid, 
+                                                            ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE,
+                                                            NULL, 
+                                                            NULL);
         if (add_descr_ret)
         {
             ESP_LOGE(GATTS_TAG, "add char descr failed, error code =%x", add_descr_ret);
@@ -622,7 +626,7 @@ static void gatts_profile_b_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         if (!param->write.is_prep)
         {
             ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, value len %d, value :", param->write.len);
-            
+
             esp_log_buffer_hex(GATTS_TAG, param->write.value, param->write.len);
 
             printf("......%s , %2d........\n", param->write.value, (int)param->write.len);
@@ -634,11 +638,8 @@ static void gatts_profile_b_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
                     if (b_property & ESP_GATT_CHAR_PROP_BIT_NOTIFY)
                     {
                         ESP_LOGI(GATTS_TAG, "notify enable");
-                        uint8_t notify_data[15];
-                        for (int i = 0; i < sizeof(notify_data); ++i)
-                        {
-                            notify_data[i] = i % 0xff;
-                        }
+                        uint8_t notify_data[notifyBString.length()];
+                        strcpy((char *)notify_data, notifyBString.c_str());
                         //the size of notify_data[] need less than MTU size
                         esp_ble_gatts_send_indicate(gatts_if, param->write.conn_id, gl_profile_tab[PROFILE_B_APP_ID].char_handle,
                                                     sizeof(notify_data), notify_data, false);
@@ -649,11 +650,9 @@ static void gatts_profile_b_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
                     if (b_property & ESP_GATT_CHAR_PROP_BIT_INDICATE)
                     {
                         ESP_LOGI(GATTS_TAG, "indicate enable");
-                        uint8_t indicate_data[15];
-                        for (int i = 0; i < sizeof(indicate_data); ++i)
-                        {
-                            indicate_data[i] = i % 0xff;
-                        }
+
+                        uint8_t indicate_data[ESP_GATT_MAX_ATTR_LEN];
+                        strcpy((char *)indicate_data, indicateBString.c_str());
                         //the size of indicate_data[] need less than MTU size
                         esp_ble_gatts_send_indicate(gatts_if, param->write.conn_id, gl_profile_tab[PROFILE_B_APP_ID].char_handle,
                                                     sizeof(indicate_data), indicate_data, true);
@@ -697,10 +696,12 @@ static void gatts_profile_b_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
 
         esp_ble_gatts_start_service(gl_profile_tab[PROFILE_B_APP_ID].service_handle);
         b_property = ESP_GATT_CHAR_PROP_BIT_READ | ESP_GATT_CHAR_PROP_BIT_WRITE | ESP_GATT_CHAR_PROP_BIT_NOTIFY;
-        esp_err_t add_char_ret = esp_ble_gatts_add_char(gl_profile_tab[PROFILE_B_APP_ID].service_handle, &gl_profile_tab[PROFILE_B_APP_ID].char_uuid,
+        esp_err_t add_char_ret = esp_ble_gatts_add_char(gl_profile_tab[PROFILE_B_APP_ID].service_handle, 
+                                                        &gl_profile_tab[PROFILE_B_APP_ID].char_uuid,
                                                         ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE,
                                                         b_property,
-                                                        NULL, NULL);
+                                                        NULL, 
+                                                        NULL);
         if (add_char_ret)
         {
             ESP_LOGE(GATTS_TAG, "add char failed, error code =%x", add_char_ret);
@@ -719,9 +720,12 @@ static void gatts_profile_b_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         gl_profile_tab[PROFILE_B_APP_ID].char_handle = param->add_char.attr_handle;
         gl_profile_tab[PROFILE_B_APP_ID].descr_uuid.len = ESP_UUID_LEN_16;
         gl_profile_tab[PROFILE_B_APP_ID].descr_uuid.uuid.uuid16 = ESP_GATT_UUID_CHAR_CLIENT_CONFIG;
-        esp_ble_gatts_add_char_descr(gl_profile_tab[PROFILE_B_APP_ID].service_handle, &gl_profile_tab[PROFILE_B_APP_ID].descr_uuid,
-                                     ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE,
-                                     NULL, NULL);
+        //调用此函数以添加特征描述符
+        esp_ble_gatts_add_char_descr(gl_profile_tab[PROFILE_B_APP_ID].service_handle, 
+                                    &gl_profile_tab[PROFILE_B_APP_ID].descr_uuid,   //描述符UUID
+                                    ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE,      //特征描述符值
+                                    NULL,
+                                    NULL);
         break;
     }
     case ESP_GATTS_ADD_CHAR_DESCR_EVT:
@@ -831,8 +835,8 @@ void set_device_name(std::string device_name)
 
 void bluetooth_init()
 {
-    struct_init();
 
+    struct_init();
     esp_err_t ret;
     //蓝牙控制器按照经典蓝牙模式释放内存
     ESP_ERROR_CHECK(esp_bt_controller_mem_release(ESP_BT_MODE_CLASSIC_BT));
@@ -845,6 +849,7 @@ void bluetooth_init()
         ESP_LOGE(GATTS_TAG, "%s initialize controller failed: %s\n", __func__, esp_err_to_name(ret));
         return;
     }
+
     //蓝牙设备使能BLE模式
     ret = esp_bt_controller_enable(ESP_BT_MODE_BLE);
     if (ret)
@@ -852,6 +857,7 @@ void bluetooth_init()
         ESP_LOGE(GATTS_TAG, "%s enable controller failed: %s\n", __func__, esp_err_to_name(ret));
         return;
     }
+
     //bluedroid初始化
     ret = esp_bluedroid_init();
     if (ret)
@@ -859,6 +865,7 @@ void bluetooth_init()
         ESP_LOGE(GATTS_TAG, "%s init bluetooth failed: %s\n", __func__, esp_err_to_name(ret));
         return;
     }
+
     //bluedroid使能
     ret = esp_bluedroid_enable();
     if (ret)
@@ -877,6 +884,7 @@ void bluetooth_init()
         ESP_LOGE(GATTS_TAG, "gatts register error, error code = %x", ret);
         return;
     }
+
     //注册GAP事件
     ret = esp_ble_gap_register_callback(gap_event_handler);
     if (ret)
@@ -884,18 +892,24 @@ void bluetooth_init()
         ESP_LOGE(GATTS_TAG, "gap register error, error code = %x", ret);
         return;
     }
+
+    //注册GATT应用（profileA）
     ret = esp_ble_gatts_app_register(PROFILE_A_APP_ID);
     if (ret)
     {
         ESP_LOGE(GATTS_TAG, "gatts app register error, error code = %x", ret);
         return;
     }
+
+    //注册GATT应用（profileB）
     ret = esp_ble_gatts_app_register(PROFILE_B_APP_ID);
     if (ret)
     {
         ESP_LOGE(GATTS_TAG, "gatts app register error, error code = %x", ret);
         return;
     }
+    
+    //设定GATT  MTU
     esp_err_t local_mtu_ret = esp_ble_gatt_set_local_mtu(500);
     if (local_mtu_ret)
     {

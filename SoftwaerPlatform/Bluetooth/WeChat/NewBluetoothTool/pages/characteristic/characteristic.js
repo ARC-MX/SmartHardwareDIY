@@ -11,8 +11,7 @@ Page({
     currentDevice: [],
     serviceID: "",
     characteristic: [],
-    connectMessage: "已连接",
-    connectFlag: "断开",
+    connectFlag: true,
     addBrFlag: false,
     addSpaceFlag: true,
     readWords: 0,
@@ -29,14 +28,24 @@ Page({
     autoSendChecked: false,
     inputValue: "123",
     sendArrayBuffer: [],
-    intervalID:"",
+    intervalID: "",
     icon: {
       normal: '../../utils/normal.png',
       active: '../../utils/active.png',
       disable: '../../utils/disable.png'
     }
-
   },
+
+  //监听蓝牙连接状态
+  onBLEConnectionStateChange: function() {
+    wx.onBLEConnectionStateChange(res => {
+      this.setData({
+        connectFlag: res.connected ? true : false
+      })
+
+    })
+  },
+
 
   /**
    * 生命周期函数--监听页面加载
@@ -49,8 +58,8 @@ Page({
       currentDevice: device,
       serviceID: serviceID,
       characteristic: characteristic
-    })
-
+    });
+    this.onBLEConnectionStateChange();
   },
 
   /**
@@ -97,26 +106,15 @@ Page({
   //蓝牙连接控制
   changeConnectedState: function(e) {
     console.log("更改连接状态")
-    if (this.data.connectMessage == "已连接") {
+
+    if (this.data.connectFlag) {
       wx.closeBLEConnection({
-        deviceId: this.data.currentDevice.deviceId,
-        success: res => {
-          this.setData({
-            connectMessage: "已断开",
-            connectFlag: "连接"
-          })
-        },
+        deviceId: this.data.currentDevice.deviceId
       })
 
     } else {
       wx.createBLEConnection({
-        deviceId: this.data.currentDevice.deviceId,
-        success: res => {
-          this.setData({
-            connectMessage: "已连接",
-            connectFlag: "断开"
-          })
-        },
+        deviceId: this.data.currentDevice.deviceId
       })
     }
 
@@ -185,12 +183,12 @@ Page({
     if (event.detail) {
       value = utfEx.encode2utf8ArrayBuffer(value);
       value = utfEx.u8Array2string(value).toUpperCase();
-    
+
     } else {
       value = utfEx.hexString2ArrayBuffer(value);
       value = utfEx.decode2utf8(value);
     }
-    
+
     this.setData({
       writeHexChecked: event.detail,
       inputValue: value
@@ -205,7 +203,7 @@ Page({
     var _this = this
     if (_this.data.autoSendChecked) {
       _this.data.intervalID = setInterval(_this.send, _this.data.inputTime);
-      console.log("开启自动发送功能，定时" + _this.data.inputTime+" ms 发送一次")
+      console.log("开启自动发送功能，定时" + _this.data.inputTime + " ms 发送一次")
     } else {
       clearInterval(_this.data.intervalID);
     }

@@ -4,9 +4,9 @@
   <view class="flex-buletooth" style="flex-direction:row;">
     <view class="flex-buletoothName" style="flex-direction:column;">
       <view class="flex-item buletoothName">蓝牙名称: {{currentDevice.name}}</view>
-      <view class="flex-item connectFlag">连接状态: {{connectMessage}}</view>
+      <view class="flex-item connectFlag">连接状态: {{connectFlag? "已连接":"已断开"}}</view>
     </view>
-    <button plain type="warn" bindtap="changeConnectedState">{{connectFlag}}</button>
+    <button plain type="warn" bindtap="changeConnectedState">{{connectFlag?"断开":"连接"}}</button>
   </view>
 
   <view class="flex-characteristic" style="flex-direction:column;">
