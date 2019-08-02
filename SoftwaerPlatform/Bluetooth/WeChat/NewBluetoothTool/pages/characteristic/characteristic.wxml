@@ -1,6 +1,6 @@
 <!-- pages/characteristic/characteristic.wxml -->
+<wxs module="utils" src="../../utils/util.wxs"></wxs>
 <view class="characteristic">
-
   <view class="flex-buletooth" style="flex-direction:row;">
     <view class="flex-buletoothName" style="flex-direction:column;">
       <view class="flex-item buletoothName">蓝牙名称: {{currentDevice.name}}</view>
@@ -11,6 +11,7 @@
 
   <view class="flex-characteristic" style="flex-direction:column;">
     <view>UUID: {{characteristic.uuid}}</view>
+    <view>特征描述: {{characteristic.characteristicType}}</view>
     <view class="flex-Props" style="flex-direction:row;">
       <view>Props:</view>
       <view class="characteristicsProps" wx-if="{{characteristic.properties.read}}"> 读 </view>
@@ -24,6 +25,7 @@
     <view class="flex-read" style="flex-direction:row;">
       <button class="flex-item readButton" bindtap="textClean" plain type="warn">清空</button>
       <button class="flex-item readButton" bindtap="readNumClean" plain type="warn">清零</button>
+      <button class="flex-item readButton" bindtap="readNotify" disabled="{{!utils.max(characteristic.properties.notify,characteristic.properties.indicate)}}" plain type="warn">通知</button>
       <button class="flex-item readButton" bindtap="readText" disabled="{{!characteristic.properties.read}}" plain type="warn">读值</button>
     </view>
     <view class="flex-read" style="flex-direction:row;">
@@ -45,7 +47,7 @@
         </van-checkbox>
       </view>
     </view>
-    <scroll-view class="readTextView" scroll-y scroll-top="{{}}" bindlongpress="toggleActionSheet">
+    <scroll-view class="readTextView" scroll-y bindlongpress="toggleActionSheet">
       <text class="readText">{{readValue}}</text>
     </scroll-view>
   </view>

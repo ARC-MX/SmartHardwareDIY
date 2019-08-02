@@ -7,10 +7,15 @@ var math = {
   len: function(arr) {
     arr = arr || []
     return arr.length
+  },
+  logicOr:function(a,b){
+
+    return a||b
   }
 }
 
 module.exports = {
   max: math.max,
-  len: math.len
+  len: math.len,
+  logicOr: math.logicOr
 }

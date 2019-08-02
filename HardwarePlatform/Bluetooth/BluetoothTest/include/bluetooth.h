@@ -46,11 +46,13 @@
 #include "nvs_value.h"
 
 #define GATTS_TAG "GATTS_DEMO"
+#define GATTS_LED "LED_CONTROL"
 
-#define GATTS_SERVICE_UUID_TEST_A   0x00FF
-#define GATTS_CHAR_UUID_TEST_A      0xFF01
-#define GATTS_DESCR_UUID_TEST_A     0x3333
-#define GATTS_NUM_HANDLE_TEST_A     4           //此服务请求的句柄数。
+#define GATTS_SERVICE_UUID_LED   0x00FF
+#define GATTS_CHAR_UUID_LED      0xFF01
+#define GATTS_DESCR_UUID_LED     0x3333
+#define GATTS_NUM_HANDLE_LED     4           //此服务请求的句柄数。
+#define LED_SREVICE_NUM          2
 
 #define GATTS_SERVICE_UUID_TEST_B   0x00EE
 #define GATTS_CHAR_UUID_TEST_B      0xEE01
@@ -58,14 +60,14 @@
 #define GATTS_NUM_HANDLE_TEST_B     4
 
 #define TEST_DEVICE_NAME            "M_X"
-#define TEST_MANUFACTURER_DATA_LEN  17
+#define MANUFACTURER_DATA           "王孟轩"  //制造商数据
 
 #define GATTS_DEMO_CHAR_VAL_LEN_MAX 0x40
 
 #define PREPARE_BUF_MAX_SIZE 1024
 
 #define PROFILE_NUM 2               //定义两个profile
-#define PROFILE_A_APP_ID 0
+#define LED_CONTROL 0
 #define PROFILE_B_APP_ID 1
 
 
@@ -79,18 +81,18 @@ extern "C"{
 
 //定义Profile实例 结构体
 struct gatts_profile_inst {
-    esp_gatts_cb_t gatts_cb;
-    uint16_t gatts_if;
-    uint16_t app_id;
-    uint16_t conn_id;
-    uint16_t service_handle;
-    esp_gatt_srvc_id_t service_id;
-    uint16_t char_handle;
-    esp_bt_uuid_t char_uuid;
-    esp_gatt_perm_t perm;
-    esp_gatt_char_prop_t property;
-    uint16_t descr_handle;
-    esp_bt_uuid_t descr_uuid;
+    esp_gatts_cb_t gatts_cb;        //GATT通用连接接口参数
+    uint16_t gatts_if;              //GATT通用连接接口
+    uint16_t app_id;                //profile注册ID 表示当前服务index
+    uint16_t conn_id;               //当前连接ID gatt连接事件参数
+    uint16_t service_handle;        //GATT服务属性句柄
+    esp_gatt_srvc_id_t service_id;  //服务信息 UUID和是否主服务 (uuid and instance id) and primary flag
+    uint16_t char_handle;           //当前服务下characteristic句柄
+    esp_bt_uuid_t char_uuid;        //characteristic UUID
+    esp_gatt_perm_t perm;           // 属性权限 
+    esp_gatt_char_prop_t property;  //characteristic 属性
+    uint16_t descr_handle;          //描述句柄
+    esp_bt_uuid_t descr_uuid;       //描述符UUID
 };
 
 typedef struct {

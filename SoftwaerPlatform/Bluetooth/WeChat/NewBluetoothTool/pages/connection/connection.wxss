@@ -11,14 +11,6 @@
   border-radius: 5px;
 }
 
-.flex-properties {
-  display: flex;
-  height: auto;
-  white-space: pre;
-  color: rgb(216, 145, 14);
-  align-items: center;
-}
-
 .deviceName {
   font-size: 50rpx;
   color: rgb(231, 18, 18);
@@ -44,33 +36,65 @@
   color: rgb(3, 52, 116);
 }
 
-.ServiceUUIDs {
-  background-color: rgb(38, 233, 126);
-  font-size: 30rpx;
-}
+/* .services {
+  font-size: 50rpx;
+  color: rgb(38, 233, 126);
+} */
 
-.ServiceUUID {
-  background-color: rgb(44, 114, 146);
-  font-size: 30rpx;
-}
-
-.flex-wrp {
-  display: flex;
-  height: auto;
-  justify-content: space-between;
-  border-color: rgb(235, 79, 31);
-  border-style: solid;
-  border-bottom: 1pt;
-  border-width: 1px 0 0 0;
+.service {
+  line-height: 1.5;
+  font-size: 50rpx;
+  color: rgb(4, 167, 77);
 }
 
 .flex-wrp-services {
-  background-color: rgb(149, 231, 186);
+  display: flex;
+  text-align: center;
 }
 
-.flex-Props {
+.services_uuid {
+  white-space: nowrap;
+  font-size: 28rpx;
+  color: rgb(5, 207, 96);
+}
+
+.services_type {
+  font-size: 30rpx;
+  color: rgb(212, 24, 24);
+}
+
+.services_isPrimary {
+  font-size: 30rpx;
+  color: rgb(212, 24, 24);
+}
+
+.flex-characteristic {
   display: flex;
   height: auto;
-  justify-content: space-between;
   white-space: pre;
+  margin-top: 15rpx;
+}
+
+.characteristic {
+  border-width: thin 0 0;
+  border-style: solid;
+  border-color: rgb(18, 234, 241);
+}
+
+.characteristicsUUID {
+  font-size: 30rpx;
+  color: rgb(212, 24, 24);
+}
+
+.flex-properties {
+  display: flex;
+  height: auto;
+  white-space: pre;
+  color: rgb(216, 145, 14);
+  align-items: center;
+}
+
+characteristicsValue {
+  font-size: 30rpx;
+  color: rgb(26, 1, 247);
 }

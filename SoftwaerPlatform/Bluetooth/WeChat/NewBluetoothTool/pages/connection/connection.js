@@ -1,5 +1,8 @@
 // pages/connection/connection.js
 var utfEx = require('../../utils/utfEx.js');
+
+
+
 Page({
 
   /**
@@ -9,13 +12,31 @@ Page({
     deviceId: "",
     currentDevice: [],
     deviceAdvertisData: "",
-    currentDeviceService: [],
-    activeServiceId: "",
-    servicesType: "自定义",
+    currentDeviceServices: [],
+    activeService: "",
+    serviceType: "自定义",
     currentCharacteristics: [],
     activeName: "",
-    connected: " ...",
-    debugM: "页面跳转"
+    connected: " ..."
+  },
+
+  _currentOperation: "",
+
+  //监听蓝牙连接状态
+  onBLEConnectionStateChange: function() {
+    wx.onBLEConnectionStateChange(res => {
+      this.setData({
+        connected: res.connected ? "已连接" : "已断开"
+      })
+      console.log("蓝牙连接状态为：", res.connected)
+      if (!res.connected) {
+        console.log("页面跳转", res.connected)
+        wx.navigateTo({
+          url: '../index/index',
+        })
+      }
+
+    })
   },
 
   /**
@@ -40,19 +61,17 @@ Page({
       success: (res) => {
         this.setData({
           deviceId: deviceId,
-          connected: "已连接",
-          debugM: "关闭蓝牙服务\n" + res.errMsg,
         })
         //获取蓝牙设备服务
         this.getBLEDeviceServices(deviceId)
       },
       fail: res => {
         this.setData({
-          connected: "连接失败",
-          debugM: "关闭蓝牙服务\n" + res.errMsg,
+          connected: "连接失败"
         })
       },
     })
+    this.onBLEConnectionStateChange();
   },
 
   /**
@@ -62,35 +81,75 @@ Page({
     wx.getBLEDeviceServices({
       deviceId,
       success: (res) => {
-        console.log("------获取蓝牙设备(" + deviceId + ")所有服务------\n", res)
+        console.log("------获取蓝牙设备(" + deviceId + ")所有服务------\n", res);
+        var services = res.services;
+        if (services.length > 0) {
+          this.onBLECharacteristicValueChange();
+        }
+        for (let i = 0; i < services.length; i++) {
+          switch (services[i].uuid.substring(4, 8)) {
+            case "1800":
+              services[i]["serviceType"] = "通用访问";
+              break;
+            case "1801":
+              services[i]["serviceType"] = "通用属性";
+              break;
+            case "180A":
+              services[i]["serviceType"] = "设备信息";
+              break;
+            case "181C":
+              services[i]["serviceType"] = "用户数据";
+              break;
+            case "1805":
+              services[i]["serviceType"] = "当前时间";
+              break;
+            default:
+              services[i]["serviceType"] = "自定义";
+          }
+        }
+        console.log("services 为：", services);
+        console.log("res.services 为：", res.services);
         this.setData({
-          currentDeviceService: res.services
-        })
+          currentDeviceServices: services
+        });
+        console.log("currentDeviceServices 为：", this.data.currentDeviceServices);
       }
     })
   },
 
   //监听低功耗蓝牙设备的特征值变化事件
-  onBLECharacteristicValueChange:function(){
+  onBLECharacteristicValueChange: function() {
     // 操作之前先监听，保证第一时间获取数据
     wx.onBLECharacteristicValueChange((characteristic) => {
       const index = utfEx.inArray(this.data.currentCharacteristics, 'uuid', characteristic.characteristicId)
       if (index === -1) {
-
         var currentCharacteristics = this.data.currentCharacteristics[this.data.currentCharacteristics.length];
-        currentCharacteristics["value"] = utfEx.decode2utf8(characteristic.value);
+
+        if (this._currentOpreation == "notify") {
+          currentCharacteristics["notifyValue"] = utfEx.decode2utf8(characteristic.value);
+          this._currentOpreation = "";
+        } else if (this._currentOpreation == "read") {
+          currentCharacteristics["readValue"] = utfEx.decode2utf8(characteristic.value);
+          this._currentOpreation = "";
+        }
+
         this.data.currentCharacteristics[this.data.currentCharacteristics.length] = currentCharacteristics;
-        console.log("currentCharacteristics :", currentCharacteristics)
       } else {
         var currentCharacteristics = this.data.currentCharacteristics[index];
-        currentCharacteristics["value"] = utfEx.decode2utf8(characteristic.value);
+
+        if (this._currentOpreation == "notify") {
+          currentCharacteristics["notifyValue"] = utfEx.decode2utf8(characteristic.value);
+          this._currentOpreation = "";
+        } else if (this._currentOpreation == "read") {
+          currentCharacteristics["readValue"] = utfEx.decode2utf8(characteristic.value);
+          this._currentOpreation = "";
+        }
+
         this.data.currentCharacteristics[index] = currentCharacteristics;
-        console.log("currentCharacteristics :", currentCharacteristics)
       }
       this.setData({
         currentCharacteristics: this.data.currentCharacteristics
-      }
-      )
+      })
     })
   },
 
@@ -105,53 +164,77 @@ Page({
         this.setData({ //记录当前服务下的所有特征值
           currentCharacteristics: res.characteristics
         })
-
         //遍历所有特征值
         for (let i = 0; i < res.characteristics.length; i++) {
-          let item = res.characteristics[i]
-          //该特征值是否支持 notify（通知） 或 indicate（指示） 操作
-          if (item.properties.notify || item.properties.indicate) {
-            wx.notifyBLECharacteristicValueChange({
-              deviceId,
-              serviceId,
-              characteristicId: item.uuid,
-              state: true,
-            })
-          }
+          let characteristic = res.characteristics[i];
+          this.getCharacteristicNotify_IndicateValue(deviceId, serviceId, characteristic);
         }
       },
       fail(res) {
         console.error("------获取蓝牙设备(" + deviceId + ")主服务(" + serviceId + ")特征值失败------", res)
       }
-    }),
-      this.onBLECharacteristicValueChange()
+    })
   },
 
   stopBluetoothDevicesDiscovery: function(e) {
     wx.stopBluetoothDevicesDiscovery({
       success: (res) => {
         console.log("------停止搜寻附近的蓝牙外围设备------\n", res)
-        this.setData({
-          debugM: "停止搜寻附近的蓝牙外围设备\n" + res.errMsg
-        });
       },
     })
   },
 
   onChange(event) {
-    this.getBLEDeviceCharacteristics(this.data.deviceId, this.data.currentDeviceService[event.detail].uuid)
+    if (event.detail === "") {
+      this.setData({
+        activeName: ""
+      });
+      return;
+    }
+    this.getBLEDeviceCharacteristics(this.data.deviceId, this.data.currentDeviceServices[event.detail].uuid);
     this.setData({
       activeName: event.detail,
-      activeServiceId: this.data.currentDeviceService[event.detail]
+      activeService: this.data.currentDeviceServices[event.detail]
     });
   },
 
-  selectCharacteristic: function(e) {
+  getNotifyValue: function(e) {
     var characteristic = e.currentTarget.dataset.characteristic
-    //将对象转为string
+    const deviceId = this.data.currentDevice.deviceId;
+    const serviceId = this.data.activeService.uuid;
+    if (characteristic.properties.read) {
+      wx.readBLECharacteristicValue({
+        deviceId,
+        serviceId,
+        characteristicId: characteristic.uuid,
+      })
+      this._currentOpreation = "read";
+      console.log("this._currentOpreation = ", this._currentOpreation)
+    }
+  },
+
+  writeValue: function(e) {
+    var characteristic = e.currentTarget.dataset.characteristic
+    const deviceId = this.data.currentDevice.deviceId;
+    const serviceId = this.data.activeService.uuid;
     wx.navigateTo({
-      url: '../characteristic/characteristic?characteristic=' + JSON.stringify(characteristic) + '&serviceUUID=' + this.data.activeServiceId.uuid + '&device=' + JSON.stringify(this.data.currentDevice)
+      url: '../characteristic/characteristic?characteristic=' + JSON.stringify(characteristic) + '&serviceUUID=' + serviceId + '&device=' + JSON.stringify(this.data.currentDevice)
     })
+
+  },
+
+  getCharacteristicNotify_IndicateValue(deviceId, serviceId, characteristic) {
+    //该特征值是否支持 notify（通知） 或 indicate（指示） 操作
+    if (characteristic.properties.notify || characteristic.properties.indicate) {
+      wx.notifyBLECharacteristicValueChange({
+        deviceId,
+        serviceId,
+        characteristicId: characteristic.uuid,
+        state: true,
+      })
+      this._currentOpreation = "notify";
+    }
+
   }
 
 

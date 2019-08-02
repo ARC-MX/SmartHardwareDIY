@@ -19,7 +19,7 @@
 #include "bluetooth.h"
 
 uint8_t char1_str[] = {0x11, 0x22, 0x33};
-esp_gatt_char_prop_t a_property = 0;
+esp_gatt_char_prop_t led_property = 0;
 esp_gatt_char_prop_t b_property = 0;
 
 //读取回复数据
@@ -48,48 +48,31 @@ static uint8_t raw_scan_rsp_data[] = {
     0x45, 0x4d, 0x4f};
 #else
 
-static uint8_t adv_service_uuid128[32] = {
-    /* LSB <--------------------------------------------------------------------------------> MSB */
-    //first uuid, 16bit, [12],[13] is the value
-    0xfb,
-    0x34,
-    0x9b,
-    0x5f,
-    0x80,
-    0x00,
-    0x00,
-    0x80,
-    0x00,
-    0x10,
-    0x00,
-    0x00,
-    0xEE,
-    0x00,
-    0x00,
-    0x00,
-    //second uuid, 32bit, [12], [13], [14], [15] is the value
-    0xfb,
-    0x34,
-    0x9b,
-    0x5f,
-    0x80,
-    0x00,
-    0x00,
-    0x80,
-    0x00,
-    0x10,
-    0x00,
-    0x00,
-    0xFF,
-    0x00,
-    0x00,
-    0x00,
+static uint8_t adv_led_service_uuid128[LED_SREVICE_NUM][16] = {
+    {
+        /* LSB <--------------------------------------------------------------------------------> MSB */
+        //first uuid, 16bit, [12],[13] is the value
+        0xfb,0x34,0x9b,0x5f,0x80,0x00,0x00,0x80,0x00,0x10,0x00,0x00,0xFF,0x00,0x00,0x00
+    },
+    {
+        /* LSB <--------------------------------------------------------------------------------> MSB */
+        //second uuid, 16bit, [12], [13], [14], [15] is the value
+        0xfb,0x34,0x9b,0x5f,0x80,0x00,0x00,0x80,0x00,0x10,0x00,0x00,0xEE,0x00,0x00,0x00
+    }
 };
 
 // The length of adv data must be less than 31 bytes
-//static uint8_t test_manufacturer[TEST_MANUFACTURER_DATA_LEN] =  {0x12, 0x23, 0x45, 0x56};
-//adv data
-static esp_ble_adv_data_t adv_data;
+
+static std::string manufacturer = MANUFACTURER_DATA;
+
+const uint8_t manufacturer_len = manufacturer.length();
+
+
+
+//led adv data
+static esp_ble_adv_data_t led_adv_data[LED_SREVICE_NUM];
+
+
 // scan response data
 static esp_ble_adv_data_t scan_rsp_data;
 
@@ -98,15 +81,15 @@ static esp_ble_adv_data_t scan_rsp_data;
 static esp_ble_adv_params_t adv_params;
 
 ///Declare the static function
-static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param);
+static void gatts_profile_led_control_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param);
 static void gatts_profile_b_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param);
 
 /* One gatt-based profile one app_id and one gatts_if, this array will store the gatts_if returned by ESP_GATTS_REG_EVT */
 static struct gatts_profile_inst gl_profile_tab[PROFILE_NUM] = {};
 
-static void struct_init()
-{
+static  esp_gatt_srvc_id_t led_service_id[LED_SREVICE_NUM];      //led 服务UUID结构体 注册两个服务
 
+static void struct_init(){
     //esp_attr_value_t  gatts_demo_char1_val
     {
         gatts_demo_char1_val.attr_max_len = GATTS_DEMO_CHAR_VAL_LEN_MAX;
@@ -114,23 +97,40 @@ static void struct_init()
         gatts_demo_char1_val.attr_value = char1_str;
     }
 
+
+
     //esp_ble_adv_data_t adv_data =
     {
-        adv_data.set_scan_rsp = false;
-        adv_data.include_name = true;
-        adv_data.include_txpower = true;
-        adv_data.min_interval = 0x0006; //slave connection min interval; Time = min_interval * 1.25 msec
-        adv_data.max_interval = 0x0010; //slave connection max interval; Time = max_interval * 1.25 msec
-        adv_data.appearance = 0x00;
-        adv_data.manufacturer_len = 0;       //TEST_MANUFACTURER_DATA_LEN;
-        adv_data.p_manufacturer_data = NULL; //&test_manufacturer[0];
-        adv_data.service_data_len = 0;
-        adv_data.p_service_data = NULL;
-        adv_data.service_uuid_len = 32;
-        adv_data.p_service_uuid = adv_service_uuid128;
-        adv_data.flag = (ESP_BLE_ADV_FLAG_GEN_DISC | ESP_BLE_ADV_FLAG_BREDR_NOT_SPT);
+        led_adv_data[0].set_scan_rsp = false;          //将广播数据设置为扫描回复数据
+        led_adv_data[0].include_name = true;           //是否广播设备名称
+        led_adv_data[0].include_txpower = true;        //是否广播发射功率
+        led_adv_data[0].min_interval = 0x0006;         //slave connection min interval; Time = min_interval * 1.25 msec
+        led_adv_data[0].max_interval = 0x0010;         //slave connection max interval; Time = max_interval * 1.25 msec
+        led_adv_data[0].appearance = 0x00;             //设备外观
+        led_adv_data[0].manufacturer_len = manufacturer_len;                       //制造商数据长度 
+        led_adv_data[0].p_manufacturer_data = (uint8_t*)manufacturer.c_str();     //制造商数据     
+        led_adv_data[0].service_data_len = 0;          //服务数据长度
+        led_adv_data[0].p_service_data = NULL;         //服务数据指针
+        led_adv_data[0].service_uuid_len = 16;         //服务UUID长度
+        led_adv_data[0].p_service_uuid = adv_led_service_uuid128[0];  //服务UUID数据指针
+        led_adv_data[0].flag = (ESP_BLE_ADV_FLAG_GEN_DISC | ESP_BLE_ADV_FLAG_BREDR_NOT_SPT); //发现模式FLAG
     }
 
+    // {
+    //     led_adv_data[1].set_scan_rsp = true;
+    //     led_adv_data[1].include_name = true;
+    //     led_adv_data[1].include_txpower = true;
+    //     led_adv_data[1].min_interval = 0x0006;
+    //     led_adv_data[1].max_interval = 0x0010;
+    //     led_adv_data[1].appearance = 0x00;
+    //     led_adv_data[1].manufacturer_len = manufacturer_len;       //TEST_MANUFACTURER_DATA_LEN;
+    //     led_adv_data[1].p_manufacturer_data = (uint8_t*)manufacturer.c_str(); //&test_manufacturer[0];
+    //     led_adv_data[1].service_data_len = 0;
+    //     led_adv_data[1].p_service_data = NULL;
+    //     led_adv_data[1].service_uuid_len = 16;
+    //     led_adv_data[1].p_service_uuid = adv_led_service_uuid128[1];
+    //     led_adv_data[1].flag = (ESP_BLE_ADV_FLAG_GEN_DISC | ESP_BLE_ADV_FLAG_BREDR_NOT_SPT);
+    // }
     //esp_ble_adv_data_t scan_rsp_data =
     {
         scan_rsp_data.set_scan_rsp = true;
@@ -139,14 +139,16 @@ static void struct_init()
         scan_rsp_data.min_interval = 0x0006;
         scan_rsp_data.max_interval = 0x0010;
         scan_rsp_data.appearance = 0x00;
-        scan_rsp_data.manufacturer_len = 0;       //TEST_MANUFACTURER_DATA_LEN;
-        scan_rsp_data.p_manufacturer_data = NULL; //&test_manufacturer[0];
+        scan_rsp_data.manufacturer_len = manufacturer_len;       //TEST_MANUFACTURER_DATA_LEN;
+        scan_rsp_data.p_manufacturer_data = (uint8_t*)manufacturer.c_str(); //&test_manufacturer[0];
         scan_rsp_data.service_data_len = 0;
         scan_rsp_data.p_service_data = NULL;
-        scan_rsp_data.service_uuid_len = 32;
-        scan_rsp_data.p_service_uuid = adv_service_uuid128;
+        scan_rsp_data.service_uuid_len = 16;
+        scan_rsp_data.p_service_uuid = adv_led_service_uuid128[1];
         scan_rsp_data.flag = (ESP_BLE_ADV_FLAG_GEN_DISC | ESP_BLE_ADV_FLAG_BREDR_NOT_SPT);
     }
+
+
 
     //esp_ble_adv_params_t adv_params =
     {
@@ -163,8 +165,8 @@ static void struct_init()
     //gatts_profile_inst gl_profile_tab[PROFILE_NUM] =
     {
         {
-            gl_profile_tab[PROFILE_A_APP_ID].gatts_cb = gatts_profile_a_event_handler;
-            gl_profile_tab[PROFILE_A_APP_ID].gatts_if = ESP_GATT_IF_NONE; /* Not get the gatt_if; so initial is ESP_GATT_IF_NONE */
+            gl_profile_tab[LED_CONTROL].gatts_cb = gatts_profile_led_control_event_handler;
+            gl_profile_tab[LED_CONTROL].gatts_if = ESP_GATT_IF_NONE; /* Not get the gatt_if; so initial is ESP_GATT_IF_NONE */
         }
         {
 
@@ -172,6 +174,21 @@ static void struct_init()
             gl_profile_tab[PROFILE_B_APP_ID].gatts_if = ESP_GATT_IF_NONE;              /* Not get the gatt_if; so initial is ESP_GATT_IF_NONE */
         }
     }
+    //esp_gatt_srvc_id_t led_service_id
+    {
+        {
+            led_service_id[0].is_primary = true;                               //设置当前服务为主服务
+            led_service_id[0].id.inst_id = 0x00;                               //实例编号
+            led_service_id[0].id.uuid.len = ESP_UUID_LEN_16;                   //UUID长度
+            led_service_id[0].id.uuid.uuid.uuid16 = GATTS_SERVICE_UUID_LED;    //UUID
+        }
+        {
+            led_service_id[1].is_primary = true;                               //设置当前服务为主服务
+            led_service_id[1].id.inst_id = 0x01;                               //实例编号
+            led_service_id[1].id.uuid.len = ESP_UUID_LEN_16;                   //UUID长度
+            led_service_id[1].id.uuid.uuid.uuid16 = GATTS_SERVICE_UUID_LED+1;    //UUID
+        }
+    }    
 }
 
 static prepare_type_env_t a_prepare_write_env;
@@ -181,8 +198,7 @@ void example_write_event_env(esp_gatt_if_t gatts_if, prepare_type_env_t *prepare
 void example_exec_write_event_env(prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param);
 
 //注册GAP连接事件
-static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param)
-{
+static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param){
     switch (event)
     {
 #ifdef CONFIG_SET_RAW_ADV_DATA
@@ -247,8 +263,7 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
     }
 }
 
-void example_write_event_env(esp_gatt_if_t gatts_if, prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param)
-{
+void example_write_event_env(esp_gatt_if_t gatts_if, prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param){
     printf("************************ example_write_event_env *******************************\n");
     esp_gatt_status_t status = ESP_GATT_OK;
     if (param->write.need_rsp)
@@ -305,8 +320,7 @@ void example_write_event_env(esp_gatt_if_t gatts_if, prepare_type_env_t *prepare
     }
 }
 
-void example_exec_write_event_env(prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param)
-{
+void example_exec_write_event_env(prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param){
 
     printf("----------------------------- example_exec_write_event_env -----------------------------\n");
     if (param->exec_write.exec_write_flag == ESP_GATT_PREP_WRITE_EXEC)
@@ -325,64 +339,46 @@ void example_exec_write_event_env(prepare_type_env_t *prepare_write_env, esp_ble
     prepare_write_env->prepare_len = 0;
 }
 
-static void set_gatt_rsp(esp_gatt_rsp_t *rsp, string value)
-{
+static void set_gatt_rsp(esp_gatt_rsp_t *rsp, string value){
     rsp->attr_value.len = value.length(); //数据长度
     stringstream stream(value);
     stream >> rsp->attr_value.value;
 }
 
 //注册的ProflieA回调
-static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param)
+static void gatts_profile_led_control_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param)
 {
     switch (event)
     {
     case ESP_GATTS_REG_EVT:
     { //注册GATT application profile
-        ESP_LOGI(GATTS_TAG, "REGISTER_APP_EVT, status %d, app_id %d\n", param->reg.status, param->reg.app_id);
-        gl_profile_tab[PROFILE_A_APP_ID].service_id.is_primary = true;                               //设置当前服务为主服务
-        gl_profile_tab[PROFILE_A_APP_ID].service_id.id.inst_id = 0x00;                               //实例ID
-        gl_profile_tab[PROFILE_A_APP_ID].service_id.id.uuid.len = ESP_UUID_LEN_16;                   //UUID长度
-        gl_profile_tab[PROFILE_A_APP_ID].service_id.id.uuid.uuid.uuid16 = GATTS_SERVICE_UUID_TEST_A; //UUID
-
+        ESP_LOGI(GATTS_LED, "REGISTER_SERVICE_EVT, status %d, app_id %d\n", param->reg.status, param->reg.app_id);
+        
+        gl_profile_tab[LED_CONTROL].service_id = led_service_id[0];
 #ifdef CONFIG_SET_RAW_ADV_DATA
         esp_err_t raw_adv_ret = esp_ble_gap_config_adv_data_raw(raw_adv_data, sizeof(raw_adv_data));
         if (raw_adv_ret)
         {
-            ESP_LOGE(GATTS_TAG, "config raw adv data failed, error code = %x ", raw_adv_ret);
+            ESP_LOGE(GATTS_LED, "config raw adv data failed, error code = %x ", raw_adv_ret);
         }
         adv_config_done |= adv_config_flag;
-        esp_err_t raw_scan_ret = esp_ble_gap_config_scan_rsp_data_raw(raw_scan_rsp_data, sizeof(raw_scan_rsp_data));
-        if (raw_scan_ret)
-        {
-            ESP_LOGE(GATTS_TAG, "config raw scan rsp data failed, error code = %x", raw_scan_ret);
-        }
-        adv_config_done |= scan_rsp_config_flag;
 #else
         //config adv data  配置广播参数
-        esp_err_t ret = esp_ble_gap_config_adv_data(&adv_data);
-        if (ret)
-        {
-            ESP_LOGE(GATTS_TAG, "config adv data failed, error code = %x", ret);
+        esp_err_t ret = esp_ble_gap_config_adv_data(&led_adv_data[0]);
+        if (ret){
+            ESP_LOGE(GATTS_LED, "config adv data failed, error code = %x", ret);
         }
         adv_config_done |= adv_config_flag;
-        //config scan response data   配置扫描回复参数
-        ret = esp_ble_gap_config_adv_data(&scan_rsp_data);
-        if (ret)
-        {
-            ESP_LOGE(GATTS_TAG, "config scan response data failed, error code = %x", ret);
-        }
-        adv_config_done |= scan_rsp_config_flag;
-
 #endif
         //创建application profile A下的service
-        esp_ble_gatts_create_service(gatts_if, &gl_profile_tab[PROFILE_A_APP_ID].service_id, GATTS_NUM_HANDLE_TEST_A);
+        esp_ble_gatts_create_service(gatts_if, &gl_profile_tab[LED_CONTROL].service_id, GATTS_NUM_HANDLE_LED);
+
         break;
     }
     //GATT读取事件
     case ESP_GATTS_READ_EVT:
     {
-        ESP_LOGI(GATTS_TAG, "GATT_READ_EVT, conn_id %d, trans_id %d, handle %d\n", param->read.conn_id, param->read.trans_id, param->read.handle);
+        ESP_LOGI(GATTS_LED, "GATT_READ_EVT, conn_id %d, trans_id %d, handle %d\n", param->read.conn_id, param->read.trans_id, param->read.handle);
         esp_gatt_rsp_t rsp;
         memset(&rsp, 0, sizeof(esp_gatt_rsp_t));                                                             //清空请求内存
         rsp.attr_value.handle = param->read.handle;                                                          //attribute handle属性句柄
@@ -393,47 +389,49 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
     //写入事件
     case ESP_GATTS_WRITE_EVT:
     {
-        ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, conn_id %d, trans_id %d, handle %d", param->write.conn_id, param->write.trans_id, param->write.handle);
+        ESP_LOGI(GATTS_LED, "GATT_WRITE_EVT, conn_id %d, trans_id %d, handle %d", param->write.conn_id, param->write.trans_id, param->write.handle);
         //此写入操作不是是准备写入  即非正在写入状态
         if (!param->write.is_prep)
         {
-            ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, value len %d, value : ", param->write.len);
-            esp_log_buffer_hex(GATTS_TAG, param->write.value, param->write.len); //记录写入数据
+            ESP_LOGI(GATTS_LED, "GATT_WRITE_EVT, value len %d, value : ", param->write.len);
+            esp_log_buffer_hex(GATTS_LED, param->write.value, param->write.len); //记录写入数据
+
             printf("PROFILE_A......%s , %2d........\n", param->write.value, (int)param->write.len);
-            if (gl_profile_tab[PROFILE_A_APP_ID].descr_handle == param->write.handle && param->write.len == 2)
+
+            if (gl_profile_tab[LED_CONTROL].descr_handle == param->write.handle && param->write.len == 2)
             {
                 uint16_t descr_value = param->write.value[1] << 8 | param->write.value[0];
                 if (descr_value == 0x0001)
                 {
-                    if (a_property & ESP_GATT_CHAR_PROP_BIT_NOTIFY)
+                    if (led_property & ESP_GATT_CHAR_PROP_BIT_NOTIFY)
                     {
-                        ESP_LOGI(GATTS_TAG, "notify enable");
-                        uint8_t notify_data[notifyAString.length()];
-                        strcpy((char *)notify_data, notifyAString.c_str());
-                        printf("PROFILE_A...... notify_data : %s  ，%4d\n", notify_data, sizeof(notify_data));
-                        esp_ble_gatts_send_indicate(gatts_if, param->write.conn_id, gl_profile_tab[PROFILE_A_APP_ID].char_handle,
-                                                    sizeof(notify_data), notify_data, false);
+                        ESP_LOGI(GATTS_LED, "notify enable");
+                        // uint8_t notify_data[notifyAString.length()];
+                        // strcpy((char *)notify_data, notifyAString.c_str());
+                        printf("PROFILE_A...... notify_data : %s  ，%4d\n", notifyAString.c_str(), notifyAString.length());
+                        esp_ble_gatts_send_indicate(gatts_if, param->write.conn_id, gl_profile_tab[LED_CONTROL].char_handle,
+                                                    notifyAString.length(), (uint8_t*)notifyAString.c_str(), false);
                     }
                 }
                 else if (descr_value == 0x0002)
                 {
-                    if (a_property & ESP_GATT_CHAR_PROP_BIT_INDICATE)
+                    if (led_property & ESP_GATT_CHAR_PROP_BIT_INDICATE)
                     {
-                        ESP_LOGI(GATTS_TAG, "indicate enable");
+                        ESP_LOGI(GATTS_LED, "indicate enable");
                         uint8_t indicate_data[ESP_GATT_MAX_ATTR_LEN];
                         strcpy((char *)indicate_data, indicateAString.c_str());
-                        esp_ble_gatts_send_indicate(gatts_if, param->write.conn_id, gl_profile_tab[PROFILE_A_APP_ID].char_handle,
+                        esp_ble_gatts_send_indicate(gatts_if, param->write.conn_id, gl_profile_tab[LED_CONTROL].char_handle,
                                                     sizeof(indicate_data), indicate_data, true);
                     }
                 }
                 else if (descr_value == 0x0000)
                 {
-                    ESP_LOGI(GATTS_TAG, "notify/indicate disable ");
+                    ESP_LOGI(GATTS_LED, "notify/indicate disable ");
                 }
                 else
                 {
-                    ESP_LOGE(GATTS_TAG, "unknown descr value");
-                    esp_log_buffer_hex(GATTS_TAG, param->write.value, param->write.len);
+                    ESP_LOGE(GATTS_LED, "unknown descr value");
+                    esp_log_buffer_hex(GATTS_LED, param->write.value, param->write.len);
                 }
             }
         }
@@ -443,14 +441,14 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
     //GATT 请求执行写入事件
     case ESP_GATTS_EXEC_WRITE_EVT:
     {
-        ESP_LOGI(GATTS_TAG, "ESP_GATTS_EXEC_WRITE_EVT");
+        ESP_LOGI(GATTS_LED, "ESP_GATTS_EXEC_WRITE_EVT");
         esp_ble_gatts_send_response(gatts_if, param->write.conn_id, param->write.trans_id, ESP_GATT_OK, NULL);
         example_exec_write_event_env(&a_prepare_write_env, param);
         break;
     }
     case ESP_GATTS_MTU_EVT:
     {
-        ESP_LOGI(GATTS_TAG, "ESP_GATTS_MTU_EVT, MTU %d", param->mtu.mtu);
+        ESP_LOGI(GATTS_LED, "ESP_GATTS_MTU_EVT, MTU %d", param->mtu.mtu);
         break;
     }
     case ESP_GATTS_UNREG_EVT:
@@ -459,24 +457,25 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
     }
     case ESP_GATTS_CREATE_EVT:
     {
-        ESP_LOGI(GATTS_TAG, "CREATE_SERVICE_EVT, status %d,  service_handle %d\n", param->create.status, param->create.service_handle);
-        gl_profile_tab[PROFILE_A_APP_ID].service_handle = param->create.service_handle;
-        gl_profile_tab[PROFILE_A_APP_ID].char_uuid.len = ESP_UUID_LEN_16;
-        gl_profile_tab[PROFILE_A_APP_ID].char_uuid.uuid.uuid16 = GATTS_CHAR_UUID_TEST_A;
+        ESP_LOGI(GATTS_LED, "CREATE_SERVICE_EVT, status %d,  service_handle %d\n", param->create.status, param->create.service_handle);
+        
+        gl_profile_tab[LED_CONTROL].service_handle = param->create.service_handle;//LED 控制服务句柄
+        gl_profile_tab[LED_CONTROL].char_uuid.len = ESP_UUID_LEN_16;              //LED 控制特征UUID长度
+        gl_profile_tab[LED_CONTROL].char_uuid.uuid.uuid16 = GATTS_CHAR_UUID_LED;  //LED 16位特征值
 
-        esp_ble_gatts_start_service(gl_profile_tab[PROFILE_A_APP_ID].service_handle);
-        a_property = ESP_GATT_CHAR_PROP_BIT_READ | ESP_GATT_CHAR_PROP_BIT_WRITE | ESP_GATT_CHAR_PROP_BIT_NOTIFY;
+        esp_ble_gatts_start_service(gl_profile_tab[LED_CONTROL].service_handle);   //开启LED 控制服务
+        led_property = ESP_GATT_CHAR_PROP_BIT_READ | ESP_GATT_CHAR_PROP_BIT_WRITE | ESP_GATT_CHAR_PROP_BIT_NOTIFY; //设置特征属性
+
         //向服务添加characteristic
-        esp_err_t add_char_ret = esp_ble_gatts_add_char(gl_profile_tab[PROFILE_A_APP_ID].service_handle,  //service handle
-                                                         &gl_profile_tab[PROFILE_A_APP_ID].char_uuid,     //Characteristic UUID
-                                                        ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE,         //声明属性特征值的权限 
-                                                        a_property,                                       //特征值属性（读、写、通知）
-                                                        &gatts_demo_char1_val,                            //特征值
-                                                        NULL                                              //属性响应控制字节
+        esp_err_t add_char_ret = esp_ble_gatts_add_char(gl_profile_tab[LED_CONTROL].service_handle,  //service handle
+                                                         &gl_profile_tab[LED_CONTROL].char_uuid,     //Characteristic UUID
+                                                        ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE,    //声明属性特征值的权限 
+                                                        led_property,                                //特征值属性（读、写、通知）
+                                                        &gatts_demo_char1_val,                       //特征值
+                                                        NULL                                         //属性响应控制字节
                                                         );                  
-        if (add_char_ret)
-        {
-            ESP_LOGE(GATTS_TAG, "add char failed, error code =%x", add_char_ret);
+        if (add_char_ret){
+            ESP_LOGE(GATTS_LED, "add char failed, error code =%x", add_char_ret);
         }
         break;
     }
@@ -490,40 +489,40 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         uint16_t length = 0;
         const uint8_t *prf_char;
 
-        ESP_LOGI(GATTS_TAG, "ADD_CHAR_EVT, status %d,  attr_handle %d, service_handle %d",
+        ESP_LOGI(GATTS_LED, "ADD_CHAR_EVT, status %d,  attr_handle %d, service_handle %d",
                  param->add_char.status, param->add_char.attr_handle, param->add_char.service_handle);
-        gl_profile_tab[PROFILE_A_APP_ID].char_handle = param->add_char.attr_handle;                             //记录characteristic 句柄
-        gl_profile_tab[PROFILE_A_APP_ID].descr_uuid.len = ESP_UUID_LEN_16;                                      //记录characteristic UUID长度
-        gl_profile_tab[PROFILE_A_APP_ID].descr_uuid.uuid.uuid16 = ESP_GATT_UUID_CHAR_CLIENT_CONFIG;             //Client Characteristic Configuration
+        gl_profile_tab[LED_CONTROL].char_handle = param->add_char.attr_handle;                             //记录characteristic 句柄
+        gl_profile_tab[LED_CONTROL].descr_uuid.len = ESP_UUID_LEN_16;                                      //记录characteristic UUID长度
+        gl_profile_tab[LED_CONTROL].descr_uuid.uuid.uuid16 = ESP_GATT_UUID_CHAR_CLIENT_CONFIG;             //Client Characteristic Configuration
         esp_err_t get_attr_ret = esp_ble_gatts_get_attr_value(param->add_char.attr_handle, &length, &prf_char); //检索属性值
         if (get_attr_ret == ESP_FAIL)
         {
-            ESP_LOGE(GATTS_TAG, "ILLEGAL HANDLE");
+            ESP_LOGE(GATTS_LED, "ILLEGAL HANDLE");
         }
 
-        ESP_LOGI(GATTS_TAG, "the gatts demo char length = %x", length);
+        ESP_LOGI(GATTS_LED, "the gatts demo char length = %x", length);
         for (int i = 0; i < length; i++)
         {
-            ESP_LOGI(GATTS_TAG, "prf_char[%x] =%x", i, prf_char[i]);
+            ESP_LOGI(GATTS_LED, "prf_char[%x] =%x", i, prf_char[i]);
             printf("\n");
         }
         // 调用此函数是为了添加特征描述符。完成后，将调用回调事件BTA_GATTS_ADD_DESCR_EVT来报告该描述符的状态和ID号。
-        esp_err_t add_descr_ret = esp_ble_gatts_add_char_descr(gl_profile_tab[PROFILE_A_APP_ID].service_handle,
-                                                            &gl_profile_tab[PROFILE_A_APP_ID].descr_uuid, 
+        esp_err_t add_descr_ret = esp_ble_gatts_add_char_descr(gl_profile_tab[LED_CONTROL].service_handle,
+                                                            &gl_profile_tab[LED_CONTROL].descr_uuid, 
                                                             ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE,
                                                             NULL, 
                                                             NULL);
         if (add_descr_ret)
         {
-            ESP_LOGE(GATTS_TAG, "add char descr failed, error code =%x", add_descr_ret);
+            ESP_LOGE(GATTS_LED, "add char descr failed, error code =%x", add_descr_ret);
         }
         break;
     }
     //当添加描述符完成时返回该事件
     case ESP_GATTS_ADD_CHAR_DESCR_EVT:
     {
-        gl_profile_tab[PROFILE_A_APP_ID].descr_handle = param->add_char_descr.attr_handle; //添加属性的句柄
-        ESP_LOGI(GATTS_TAG, "ADD_DESCR_EVT, status %d, attr_handle %d, service_handle %d\n",
+        gl_profile_tab[LED_CONTROL].descr_handle = param->add_char_descr.attr_handle; //添加属性的句柄
+        ESP_LOGI(GATTS_LED, "ADD_DESCR_EVT, status %d, attr_handle %d, service_handle %d\n",
                  param->add_char_descr.status, param->add_char_descr.attr_handle, param->add_char_descr.service_handle);
         break;
     }
@@ -535,7 +534,7 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
     //服务启动
     case ESP_GATTS_START_EVT:
     {
-        ESP_LOGI(GATTS_TAG, "SERVICE_START_EVT, status %d, service_handle %d\n",
+        ESP_LOGI(GATTS_LED, "SERVICE_START_EVT, status %d, service_handle %d\n",
                  param->start.status, param->start.service_handle);
         break;
     }
@@ -554,11 +553,11 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         conn_params.max_int = 0x20; // max_int = 0x20*1.25ms = 40ms
         conn_params.min_int = 0x10; // min_int = 0x10*1.25ms = 20ms
         conn_params.timeout = 400;  // timeout = 400*10ms = 4000ms
-        ESP_LOGI(GATTS_TAG, "ESP_GATTS_CONNECT_EVT, conn_id %d, remote %02x:%02x:%02x:%02x:%02x:%02x:",
+        ESP_LOGI(GATTS_LED, "ESP_GATTS_CONNECT_EVT, conn_id %d, remote %02x:%02x:%02x:%02x:%02x:%02x:",
                  param->connect.conn_id,
                  param->connect.remote_bda[0], param->connect.remote_bda[1], param->connect.remote_bda[2],
                  param->connect.remote_bda[3], param->connect.remote_bda[4], param->connect.remote_bda[5]);
-        gl_profile_tab[PROFILE_A_APP_ID].conn_id = param->connect.conn_id; //记录连接id
+        gl_profile_tab[LED_CONTROL].conn_id = param->connect.conn_id; //记录连接id
         //start sent the update connection parameters to the peer device.
         esp_ble_gap_update_conn_params(&conn_params); //更新连接参数
         break;
@@ -566,17 +565,17 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
     //断开连接事件
     case ESP_GATTS_DISCONNECT_EVT:
     {
-        ESP_LOGI(GATTS_TAG, "ESP_GATTS_DISCONNECT_EVT, disconnect reason 0x%x", param->disconnect.reason);
+        ESP_LOGI(GATTS_LED, "ESP_GATTS_DISCONNECT_EVT, disconnect reason 0x%x", param->disconnect.reason);
         esp_ble_gap_start_advertising(&adv_params);
         break;
     }
     //获得确认
     case ESP_GATTS_CONF_EVT:
     {
-        ESP_LOGI(GATTS_TAG, "ESP_GATTS_CONF_EVT, status %d attr_handle %d", param->conf.status, param->conf.handle);
+        ESP_LOGI(GATTS_LED, "ESP_GATTS_CONF_EVT, status %d attr_handle %d", param->conf.status, param->conf.handle);
         if (param->conf.status != ESP_GATT_OK)
         {
-            esp_log_buffer_hex(GATTS_TAG, param->conf.value, param->conf.len);
+            esp_log_buffer_hex(GATTS_LED, param->conf.value, param->conf.len);
         }
         break;
     }
@@ -603,6 +602,23 @@ static void gatts_profile_b_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         gl_profile_tab[PROFILE_B_APP_ID].service_id.id.inst_id = 0x00;                               //实例ID
         gl_profile_tab[PROFILE_B_APP_ID].service_id.id.uuid.len = ESP_UUID_LEN_16;                   //UUid长度
         gl_profile_tab[PROFILE_B_APP_ID].service_id.id.uuid.uuid.uuid16 = GATTS_SERVICE_UUID_TEST_B; //service UUID
+        
+#ifdef CONFIG_SET_RAW_ADV_DATA
+        esp_err_t raw_scan_ret = esp_ble_gap_config_scan_rsp_data_raw(raw_scan_rsp_data, sizeof(raw_scan_rsp_data));
+        if (raw_scan_ret)
+        {
+            ESP_LOGE(GATTS_LED, "config raw scan rsp data failed, error code = %x", raw_scan_ret);
+        }
+        adv_config_done |= scan_rsp_config_flag;
+#else
+        //config adv data  配置广播参数
+        esp_err_t ret = esp_ble_gap_config_adv_data(&scan_rsp_data);//
+        if (ret){
+            ESP_LOGE(GATTS_LED, "config scan response data failed, error code = %x", ret);
+        }
+        adv_config_done |= scan_rsp_config_flag;
+
+#endif
         //注册service
         esp_ble_gatts_create_service(gatts_if, &gl_profile_tab[PROFILE_B_APP_ID].service_id, GATTS_NUM_HANDLE_TEST_B);
         break;
@@ -626,10 +642,9 @@ static void gatts_profile_b_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         if (!param->write.is_prep)
         {
             ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, value len %d, value :", param->write.len);
-
             esp_log_buffer_hex(GATTS_TAG, param->write.value, param->write.len);
-
             printf("......%s , %2d........\n", param->write.value, (int)param->write.len);
+
             if (gl_profile_tab[PROFILE_B_APP_ID].descr_handle == param->write.handle && param->write.len == 2)
             {
                 uint16_t descr_value = param->write.value[1] << 8 | param->write.value[0];
@@ -894,7 +909,7 @@ void bluetooth_init()
     }
 
     //注册GATT应用（profileA）
-    ret = esp_ble_gatts_app_register(PROFILE_A_APP_ID);
+    ret = esp_ble_gatts_app_register(LED_CONTROL);
     if (ret)
     {
         ESP_LOGE(GATTS_TAG, "gatts app register error, error code = %x", ret);

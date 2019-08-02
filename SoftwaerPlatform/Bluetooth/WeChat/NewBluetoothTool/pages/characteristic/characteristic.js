@@ -54,6 +54,44 @@ Page({
     var characteristic = JSON.parse(options.characteristic);
     var serviceID = options.serviceUUID;
     var device = JSON.parse(options.device);
+
+    switch (characteristic.uuid.substring(4, 8)) {
+      case "2A00":
+        characteristic["characteristicType"] = "设备名称";
+          break;
+      case "2A01":
+        characteristic["characteristicType"] = "图标外观";
+        break;
+      case "2A05":
+        characteristic["characteristicType"] = "服务更改通知";
+        break;
+      case "2A08":
+        characteristic["characteristicType"] = "时间";
+          break;
+      case "2A0A":
+        characteristic["characteristicType"] = "日期";
+          break;
+      case "2A09":
+        characteristic["characteristicType"] = "周";
+          break;
+      case "2A37":
+        characteristic["characteristicType"] = "心率测量";
+        break;
+      case "2A7A":
+        characteristic["characteristicType"] = "热指数";
+        break;
+      case "2A8E":
+        characteristic["characteristicType"] = "高度";
+        break;
+      case "2A43":
+        characteristic["characteristicType"] = "警报类别ID";
+        break;
+      case "2AA6":
+        characteristic["characteristicType"] = "中央地址解析";
+          break;
+        default:
+        characteristic["characteristicType"] = "未知";
+      }
     this.setData({
       currentDevice: device,
       serviceID: serviceID,
@@ -132,19 +170,27 @@ Page({
     })
   },
 
+  //读取通知
+  readNotify:function(){
+    wx.notifyBLECharacteristicValueChange({
+      deviceId: this.data.currentDevice.deviceId,
+      serviceId: this.data.serviceID,
+      characteristicId: this.data.characteristic.uuid,
+      state: true,
+    });
+    wx.onBLECharacteristicValueChange((onNotityChangeRes) => {
+      this.readValueProcess(onNotityChangeRes.value);
+    })
+  },
+
   //读取蓝牙回传信息
   readText: function() {
     wx.readBLECharacteristicValue({
       deviceId: this.data.currentDevice.deviceId,
       serviceId: this.data.serviceID,
       characteristicId: this.data.characteristic.uuid,
-      success: res => {
-        console.log("读值操作")
-      },
     });
-
     wx.onBLECharacteristicValueChange((onNotityChangeRes) => {
-      console.log('监听到特征值更新', onNotityChangeRes);
       this.readValueProcess(onNotityChangeRes.value);
     })
   },

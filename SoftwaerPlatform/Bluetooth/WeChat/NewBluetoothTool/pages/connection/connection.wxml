@@ -11,7 +11,7 @@
     </view>
     <view class="flex-properties" style="flex-direction:row;">
       <view>广播数据：</view>
-      <view class="deviceAdvertis">{{deviceAdvertisData}}dBm</view>
+      <view class="deviceAdvertis">{{deviceAdvertisData}}</view>
     </view>
     <view class="flex-properties" style="flex-direction:row;">
       <view>连接状态：</view>
@@ -19,23 +19,48 @@
     </view>
   </view>
 
-  <van-collapse class="ServiceUUIDs" wx:for="{{currentDeviceService}}" wx:key="index" data-service-uuid="{{item}}" value="{{ activeName }}" bind:change="onChange" accordion>
-    <van-collapse-item border class="ServiceUUID" title='{{item.uuid}}' name="{{index}}">
+  <van-collapse class="services" wx:for="{{currentDeviceServices}}" wx:key="index" data-service-uuid="{{item}}" value="{{ activeName }}" bind:change="onChange" accordion>
+    <van-collapse-item border title-class="service" title='{{item.serviceType}}' name="{{index}}">
       <view class="flex-wrp-services" style="flex-direction:column;">
-        <view class="flex-item services_type">服务类型：{{servicesType}}</view>
-        <view class="flex-item services_isPrimary">是否主服务：{{item.isPrimary}}</view>
-        <view wx:for="{{currentCharacteristics}}" wx:key="index" data-characteristic="{{item}}" class="flex-wrp-characteristics" style="flex-direction:column;" bindtap="selectCharacteristic">
-          <view class="flex-item characteristicsUUID">uuid：{{item.uuid}}</view>
-          <view class="flex-Props" style="flex-direction:row;">
-            <view>Props:</view>
-            <view class="flex-properties" style="flex-direction:row;">
-              <view class="characteristicsProps" wx-if="{{item.properties.read}}"> 读 </view>
-              <view class="characteristicsProps" wx-if="{{item.properties.write}}"> 写 </view>
-              <view class="characteristicsProps" wx-if="{{item.properties.notify}}"> 通知 </view>
-              <view class="characteristicsProps" wx-if="{{item.properties.indicate}}"> 指示 </view>
+        <view class="flex-wrp-services" style="flex-direction:row;">
+          <view>服务类型：</view>
+          <view class="flex-item services_uuid">{{item.uuid}} </view>
+        </view>
+        <view class="flex-wrp-services" style="flex-direction:row;">
+          <view>服务类型：</view>
+          <view class="flex-item services_type">{{item.serviceType}}</view>
+        </view>
+        <view class="flex-wrp-services" style="flex-direction:row;">
+          <view>是否主服务：</view>
+          <view class="flex-item services_isPrimary">{{item.isPrimary}}</view>
+        </view>
+      </view>
+      <view class="flex-wrp-characteristic" style="flex-direction:column;">
+        <view wx:for="{{currentCharacteristics}}" wx:key="index" data-characteristic="{{item}}" class="flex-wrp-characteristics" style="flex-direction:column;" bindtap="getNotifyValue" bindlongtap="writeValue">
+          <view class="characteristic">
+            <view class="flex-characteristic" style="flex-direction:row;">
+              <view>UUID：</view>
+              <view class="characteristicUUID">{{item.uuid}}</view>
             </view>
+            <view class="flex-characteristic" style="flex-direction:row;">
+              <view>Props:</view>
+              <view class="flex-properties" style="flex-direction:row;">
+                <view class="characteristicsProps" wx-if="{{item.properties.read}}"> 读 </view>
+                <view class="characteristicsProps" wx-if="{{item.properties.write}}"> 写 </view>
+                <view class="characteristicsProps" wx-if="{{item.properties.notify}}"> 通知 </view>
+                <view class="characteristicsProps" wx-if="{{item.properties.indicate}}"> 指示 </view>
+              </view>
+            </view>
+            <view class="flex-characteristic" style="flex-direction:row;">
+              <view>通知值:</view>
+              <view class="characteristicsValue">{{item.notifyValue}}</view>
+            </view>
+            <view class="flex-characteristic" style="flex-direction:row;">
+              <view>读取值:</view>
+              <view class="characteristicsValue">{{item.readValue}}</view>
+            </view>
+
           </view>
-          <view class="flex-item characteristicsValue">Value:{{item.value}}</view>
         </view>
       </view>
     </van-collapse-item>
