@@ -22,6 +22,7 @@ uint8_t char1_str[] = {0x11, 0x22, 0x33};
 esp_gatt_char_prop_t led_property = 0;
 esp_gatt_char_prop_t b_property = 0;
 
+static std::string initialMessage = "LED开关控制";
 //读取回复数据
 static std::string response_message_A = "你好";
 static std::string response_message_B = "再见";
@@ -32,7 +33,7 @@ static std::string notifyBString = "321";
 static std::string indicateAString = "456";
 static std::string indicateBString = "654";
 
-esp_attr_value_t gatts_demo_char1_val;
+esp_attr_value_t gatts_led_switch_char_val;
 
 static uint8_t adv_config_done = 0;
 
@@ -90,11 +91,11 @@ static struct gatts_profile_inst gl_profile_tab[PROFILE_NUM] = {};
 static  esp_gatt_srvc_id_t led_service_id[LED_SREVICE_NUM];      //led 服务UUID结构体 注册两个服务
 
 static void struct_init(){
-    //esp_attr_value_t  gatts_demo_char1_val
+    //esp_attr_value_t  gatts_led_switch_char_val
     {
-        gatts_demo_char1_val.attr_max_len = GATTS_DEMO_CHAR_VAL_LEN_MAX;
-        gatts_demo_char1_val.attr_len = sizeof(char1_str);
-        gatts_demo_char1_val.attr_value = char1_str;
+        gatts_led_switch_char_val.attr_max_len = GATTS_DEMO_CHAR_VAL_LEN_MAX;
+        gatts_led_switch_char_val.attr_len = initialMessage.length();
+        gatts_led_switch_char_val.attr_value = (uint8_t*) initialMessage.c_str();
     }
 
 
@@ -199,8 +200,7 @@ void example_exec_write_event_env(prepare_type_env_t *prepare_write_env, esp_ble
 
 //注册GAP连接事件
 static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param){
-    switch (event)
-    {
+    switch (event){
 #ifdef CONFIG_SET_RAW_ADV_DATA
     case ESP_GAP_BLE_ADV_DATA_RAW_SET_COMPLETE_EVT:
         adv_config_done &= (~adv_config_flag);
@@ -219,33 +219,28 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
 #else
     case ESP_GAP_BLE_ADV_DATA_SET_COMPLETE_EVT: //广播数据设置完成
         adv_config_done &= (~adv_config_flag);
-        if (adv_config_done == 0)
-        {
+        if (adv_config_done == 0){
             esp_ble_gap_start_advertising(&adv_params);
         }
         break;
     case ESP_GAP_BLE_SCAN_RSP_DATA_SET_COMPLETE_EVT:
         adv_config_done &= (~scan_rsp_config_flag);
-        if (adv_config_done == 0)
-        {
+        if (adv_config_done == 0){
             esp_ble_gap_start_advertising(&adv_params);
         }
         break;
 #endif
     case ESP_GAP_BLE_ADV_START_COMPLETE_EVT:
         //advertising start complete event to indicate advertising start successfully or failed
-        if (param->adv_start_cmpl.status != ESP_BT_STATUS_SUCCESS)
-        {
+        if (param->adv_start_cmpl.status != ESP_BT_STATUS_SUCCESS){
             ESP_LOGE(GATTS_TAG, "Advertising start failed\n");
         }
         break;
     case ESP_GAP_BLE_ADV_STOP_COMPLETE_EVT:
-        if (param->adv_stop_cmpl.status != ESP_BT_STATUS_SUCCESS)
-        {
+        if (param->adv_stop_cmpl.status != ESP_BT_STATUS_SUCCESS){
             ESP_LOGE(GATTS_TAG, "Advertising stop failed\n");
         }
-        else
-        {
+        else{
             ESP_LOGI(GATTS_TAG, "Stop adv successfully\n");
         }
         break;
@@ -266,28 +261,21 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
 void example_write_event_env(esp_gatt_if_t gatts_if, prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param){
     printf("************************ example_write_event_env *******************************\n");
     esp_gatt_status_t status = ESP_GATT_OK;
-    if (param->write.need_rsp)
-    {
-        if (param->write.is_prep)
-        {
-            if (prepare_write_env->prepare_buf == NULL)
-            {
+    if (param->write.need_rsp){
+        if (param->write.is_prep){
+            if (prepare_write_env->prepare_buf == NULL){
                 prepare_write_env->prepare_buf = (uint8_t *)malloc(PREPARE_BUF_MAX_SIZE * sizeof(uint8_t));
                 prepare_write_env->prepare_len = 0;
-                if (prepare_write_env->prepare_buf == NULL)
-                {
+                if (prepare_write_env->prepare_buf == NULL){
                     ESP_LOGE(GATTS_TAG, "Gatt_server prep no mem\n");
                     status = ESP_GATT_NO_RESOURCES;
                 }
             }
-            else
-            {
-                if (param->write.offset > PREPARE_BUF_MAX_SIZE)
-                {
+            else{
+                if (param->write.offset > PREPARE_BUF_MAX_SIZE){
                     status = ESP_GATT_INVALID_OFFSET;
                 }
-                else if ((param->write.offset + param->write.len) > PREPARE_BUF_MAX_SIZE)
-                {
+                else if ((param->write.offset + param->write.len) > PREPARE_BUF_MAX_SIZE){
                     status = ESP_GATT_INVALID_ATTR_LEN;
                 }
             }
@@ -299,13 +287,11 @@ void example_write_event_env(esp_gatt_if_t gatts_if, prepare_type_env_t *prepare
             gatt_rsp->attr_value.auth_req = ESP_GATT_AUTH_REQ_NONE;
             memcpy(gatt_rsp->attr_value.value, param->write.value, param->write.len);
             esp_err_t response_err = esp_ble_gatts_send_response(gatts_if, param->write.conn_id, param->write.trans_id, status, gatt_rsp);
-            if (response_err != ESP_OK)
-            {
+            if (response_err != ESP_OK){
                 ESP_LOGE(GATTS_TAG, "Send response error\n");
             }
             free(gatt_rsp);
-            if (status != ESP_GATT_OK)
-            {
+            if (status != ESP_GATT_OK){
                 return;
             }
             memcpy(prepare_write_env->prepare_buf + param->write.offset,
@@ -313,8 +299,7 @@ void example_write_event_env(esp_gatt_if_t gatts_if, prepare_type_env_t *prepare
                    param->write.len);
             prepare_write_env->prepare_len += param->write.len;
         }
-        else
-        {
+        else{
             esp_ble_gatts_send_response(gatts_if, param->write.conn_id, param->write.trans_id, status, NULL);
         }
     }
@@ -323,16 +308,13 @@ void example_write_event_env(esp_gatt_if_t gatts_if, prepare_type_env_t *prepare
 void example_exec_write_event_env(prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param){
 
     printf("----------------------------- example_exec_write_event_env -----------------------------\n");
-    if (param->exec_write.exec_write_flag == ESP_GATT_PREP_WRITE_EXEC)
-    {
+    if (param->exec_write.exec_write_flag == ESP_GATT_PREP_WRITE_EXEC){
         esp_log_buffer_hex(GATTS_TAG, prepare_write_env->prepare_buf, prepare_write_env->prepare_len);
     }
-    else
-    {
+    else{
         ESP_LOGI(GATTS_TAG, "ESP_GATT_PREP_WRITE_CANCEL");
     }
-    if (prepare_write_env->prepare_buf)
-    {
+    if (prepare_write_env->prepare_buf){
         free(prepare_write_env->prepare_buf);
         prepare_write_env->prepare_buf = NULL;
     }
@@ -345,20 +327,16 @@ static void set_gatt_rsp(esp_gatt_rsp_t *rsp, string value){
     stream >> rsp->attr_value.value;
 }
 
-//注册的ProflieA回调
-static void gatts_profile_led_control_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param)
-{
-    switch (event)
-    {
-    case ESP_GATTS_REG_EVT:
-    { //注册GATT application profile
+//注册的Proflie LED回调
+static void gatts_profile_led_control_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param){
+    switch (event){
+    case ESP_GATTS_REG_EVT:{ //注册GATT application profile
         ESP_LOGI(GATTS_LED, "REGISTER_SERVICE_EVT, status %d, app_id %d\n", param->reg.status, param->reg.app_id);
         
         gl_profile_tab[LED_CONTROL].service_id = led_service_id[0];
 #ifdef CONFIG_SET_RAW_ADV_DATA
         esp_err_t raw_adv_ret = esp_ble_gap_config_adv_data_raw(raw_adv_data, sizeof(raw_adv_data));
-        if (raw_adv_ret)
-        {
+        if (raw_adv_ret){
             ESP_LOGE(GATTS_LED, "config raw adv data failed, error code = %x ", raw_adv_ret);
         }
         adv_config_done |= adv_config_flag;
@@ -376,8 +354,7 @@ static void gatts_profile_led_control_event_handler(esp_gatts_cb_event_t event, 
         break;
     }
     //GATT读取事件
-    case ESP_GATTS_READ_EVT:
-    {
+    case ESP_GATTS_READ_EVT:{
         ESP_LOGI(GATTS_LED, "GATT_READ_EVT, conn_id %d, trans_id %d, handle %d\n", param->read.conn_id, param->read.trans_id, param->read.handle);
         esp_gatt_rsp_t rsp;
         memset(&rsp, 0, sizeof(esp_gatt_rsp_t));                                                             //清空请求内存
@@ -387,24 +364,19 @@ static void gatts_profile_led_control_event_handler(esp_gatts_cb_event_t event, 
         break;
     }
     //写入事件
-    case ESP_GATTS_WRITE_EVT:
-    {
+    case ESP_GATTS_WRITE_EVT:{
         ESP_LOGI(GATTS_LED, "GATT_WRITE_EVT, conn_id %d, trans_id %d, handle %d", param->write.conn_id, param->write.trans_id, param->write.handle);
         //此写入操作不是是准备写入  即非正在写入状态
-        if (!param->write.is_prep)
-        {
+        if (!param->write.is_prep){
             ESP_LOGI(GATTS_LED, "GATT_WRITE_EVT, value len %d, value : ", param->write.len);
             esp_log_buffer_hex(GATTS_LED, param->write.value, param->write.len); //记录写入数据
 
             printf("PROFILE_A......%s , %2d........\n", param->write.value, (int)param->write.len);
 
-            if (gl_profile_tab[LED_CONTROL].descr_handle == param->write.handle && param->write.len == 2)
-            {
+            if (gl_profile_tab[LED_CONTROL].descr_handle == param->write.handle && param->write.len == 2){
                 uint16_t descr_value = param->write.value[1] << 8 | param->write.value[0];
-                if (descr_value == 0x0001)
-                {
-                    if (led_property & ESP_GATT_CHAR_PROP_BIT_NOTIFY)
-                    {
+                if (descr_value == 0x0001){
+                    if (led_property & ESP_GATT_CHAR_PROP_BIT_NOTIFY){
                         ESP_LOGI(GATTS_LED, "notify enable");
                         // uint8_t notify_data[notifyAString.length()];
                         // strcpy((char *)notify_data, notifyAString.c_str());
@@ -413,10 +385,8 @@ static void gatts_profile_led_control_event_handler(esp_gatts_cb_event_t event, 
                                                     notifyAString.length(), (uint8_t*)notifyAString.c_str(), false);
                     }
                 }
-                else if (descr_value == 0x0002)
-                {
-                    if (led_property & ESP_GATT_CHAR_PROP_BIT_INDICATE)
-                    {
+                else if (descr_value == 0x0002){
+                    if (led_property & ESP_GATT_CHAR_PROP_BIT_INDICATE){
                         ESP_LOGI(GATTS_LED, "indicate enable");
                         uint8_t indicate_data[ESP_GATT_MAX_ATTR_LEN];
                         strcpy((char *)indicate_data, indicateAString.c_str());
@@ -424,12 +394,10 @@ static void gatts_profile_led_control_event_handler(esp_gatts_cb_event_t event, 
                                                     sizeof(indicate_data), indicate_data, true);
                     }
                 }
-                else if (descr_value == 0x0000)
-                {
+                else if (descr_value == 0x0000) {
                     ESP_LOGI(GATTS_LED, "notify/indicate disable ");
                 }
-                else
-                {
+                else{
                     ESP_LOGE(GATTS_LED, "unknown descr value");
                     esp_log_buffer_hex(GATTS_LED, param->write.value, param->write.len);
                 }
@@ -471,7 +439,7 @@ static void gatts_profile_led_control_event_handler(esp_gatts_cb_event_t event, 
                                                          &gl_profile_tab[LED_CONTROL].char_uuid,     //Characteristic UUID
                                                         ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE,    //声明属性特征值的权限 
                                                         led_property,                                //特征值属性（读、写、通知）
-                                                        &gatts_demo_char1_val,                       //特征值
+                                                        &gatts_led_switch_char_val,                  //特征值
                                                         NULL                                         //属性响应控制字节
                                                         );                  
         if (add_char_ret){
@@ -489,20 +457,17 @@ static void gatts_profile_led_control_event_handler(esp_gatts_cb_event_t event, 
         uint16_t length = 0;
         const uint8_t *prf_char;
 
-        ESP_LOGI(GATTS_LED, "ADD_CHAR_EVT, status %d,  attr_handle %d, service_handle %d",
-                 param->add_char.status, param->add_char.attr_handle, param->add_char.service_handle);
+        ESP_LOGI(GATTS_LED, "ADD_CHAR_EVT, status %d,  attr_handle %d, service_handle %d",param->add_char.status, param->add_char.attr_handle, param->add_char.service_handle);
         gl_profile_tab[LED_CONTROL].char_handle = param->add_char.attr_handle;                             //记录characteristic 句柄
         gl_profile_tab[LED_CONTROL].descr_uuid.len = ESP_UUID_LEN_16;                                      //记录characteristic UUID长度
         gl_profile_tab[LED_CONTROL].descr_uuid.uuid.uuid16 = ESP_GATT_UUID_CHAR_CLIENT_CONFIG;             //Client Characteristic Configuration
         esp_err_t get_attr_ret = esp_ble_gatts_get_attr_value(param->add_char.attr_handle, &length, &prf_char); //检索属性值
-        if (get_attr_ret == ESP_FAIL)
-        {
+        if (get_attr_ret == ESP_FAIL){
             ESP_LOGE(GATTS_LED, "ILLEGAL HANDLE");
         }
 
         ESP_LOGI(GATTS_LED, "the gatts demo char length = %x", length);
-        for (int i = 0; i < length; i++)
-        {
+        for (int i = 0; i < length; i++){
             ESP_LOGI(GATTS_LED, "prf_char[%x] =%x", i, prf_char[i]);
             printf("\n");
         }
@@ -512,10 +477,10 @@ static void gatts_profile_led_control_event_handler(esp_gatts_cb_event_t event, 
                                                             ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE,
                                                             NULL, 
                                                             NULL);
-        if (add_descr_ret)
-        {
+        if (add_descr_ret){
             ESP_LOGE(GATTS_LED, "add char descr failed, error code =%x", add_descr_ret);
         }
+
         break;
     }
     //当添加描述符完成时返回该事件
@@ -532,20 +497,17 @@ static void gatts_profile_led_control_event_handler(esp_gatts_cb_event_t event, 
         break;
     }
     //服务启动
-    case ESP_GATTS_START_EVT:
-    {
+    case ESP_GATTS_START_EVT:{
         ESP_LOGI(GATTS_LED, "SERVICE_START_EVT, status %d, service_handle %d\n",
                  param->start.status, param->start.service_handle);
         break;
     }
     //服务停止
-    case ESP_GATTS_STOP_EVT:
-    {
+    case ESP_GATTS_STOP_EVT:{
         break;
     }
     //GATT连接事件
-    case ESP_GATTS_CONNECT_EVT:
-    {
+    case ESP_GATTS_CONNECT_EVT:{
         esp_ble_conn_update_params_t conn_params = {};
         memcpy(conn_params.bda, param->connect.remote_bda, sizeof(esp_bd_addr_t)); //记录蓝牙地址
         /* For the IOS system, please reference the apple official documents about the ble connection parameters restrictions. */
@@ -563,8 +525,7 @@ static void gatts_profile_led_control_event_handler(esp_gatts_cb_event_t event, 
         break;
     }
     //断开连接事件
-    case ESP_GATTS_DISCONNECT_EVT:
-    {
+    case ESP_GATTS_DISCONNECT_EVT:{
         ESP_LOGI(GATTS_LED, "ESP_GATTS_DISCONNECT_EVT, disconnect reason 0x%x", param->disconnect.reason);
         esp_ble_gap_start_advertising(&adv_params);
         break;
@@ -727,8 +688,7 @@ static void gatts_profile_b_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
     {
         break;
     }
-    case ESP_GATTS_ADD_CHAR_EVT:
-    {
+    case ESP_GATTS_ADD_CHAR_EVT:{
         ESP_LOGI(GATTS_TAG, "ADD_CHAR_EVT, status %d,  attr_handle %d, service_handle %d\n",
                  param->add_char.status, param->add_char.attr_handle, param->add_char.service_handle);
 
