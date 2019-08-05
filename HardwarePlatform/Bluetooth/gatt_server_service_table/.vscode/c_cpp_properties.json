@@ -6,8 +6,8 @@
         {
             "name": "Win32",
             "includePath": [
-                "e:/Project/CPP/ESP32/Project/bluetooth/gatt_server_service_table/include",
-                "e:/Project/CPP/ESP32/Project/bluetooth/gatt_server_service_table/src",
+                "e:/Project/SmartHardwareDIY/HardwarePlatform/Bluetooth/gatt_server_service_table/include",
+                "e:/Project/SmartHardwareDIY/HardwarePlatform/Bluetooth/gatt_server_service_table/src",
                 "C:/Users/ARCWPC/.platformio/packages/framework-espidf/components/bt/bluedroid/stack/smp/include",
                 "C:/Users/ARCWPC/.platformio/packages/framework-espidf/components/bt/bluedroid/stack/sdp/include",
                 "C:/Users/ARCWPC/.platformio/packages/framework-espidf/components/bt/bluedroid/stack/rfcomm/include",
@@ -124,8 +124,8 @@
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": "${workspaceRoot}/.vscode/.browse.c_cpp.db",
                 "path": [
-                    "e:/Project/CPP/ESP32/Project/bluetooth/gatt_server_service_table/include",
-                    "e:/Project/CPP/ESP32/Project/bluetooth/gatt_server_service_table/src",
+                    "e:/Project/SmartHardwareDIY/HardwarePlatform/Bluetooth/gatt_server_service_table/include",
+                    "e:/Project/SmartHardwareDIY/HardwarePlatform/Bluetooth/gatt_server_service_table/src",
                     "C:/Users/ARCWPC/.platformio/packages/framework-espidf/components/bt/bluedroid/stack/smp/include",
                     "C:/Users/ARCWPC/.platformio/packages/framework-espidf/components/bt/bluedroid/stack/sdp/include",
                     "C:/Users/ARCWPC/.platformio/packages/framework-espidf/components/bt/bluedroid/stack/rfcomm/include",
