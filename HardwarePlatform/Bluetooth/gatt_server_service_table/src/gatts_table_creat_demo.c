@@ -1,6 +1,5 @@
 /*
    This example code is in the Public Domain (or CC0 licensed, at your option.)
-
    Unless required by applicable law or agreed to in writing, this
    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
    CONDITIONS OF ANY KIND, either express or implied.
@@ -16,51 +15,13 @@
 ****************************************************************************/
 
 
- #include "freertos/FreeRTOS.h"
- #include "freertos/task.h"
- #include "freertos/event_groups.h"
- #include "esp_system.h"
- #include "esp_log.h"
- #include "nvs_flash.h"
- #include "esp_bt.h"
-
-#include "esp_gap_ble_api.h"
-#include "esp_gatts_api.h"
-#include "esp_bt_main.h"
 #include "gatts_table_creat_demo.h"
-#include "esp_gatt_common_api.h"
-
-#define GATTS_LED_TAG "GATTS_TABLE_DEMO"
-
-#define PROFILE_NUM                 1
-#define PROFILE_APP_IDX             0
-#define ESP_APP_ID                  0x55
-#define SAMPLE_DEVICE_NAME          "ESP_GATTS_DEMO"
-#define SVC_INST_ID                 0
-
-/* The max length of characteristic value. When the gatt client write or prepare write, 
-*  the data length must be less than GATTS_LED_CHAR_VAL_LEN_MAX. 
-*/
-#define GATTS_LED_CHAR_VAL_LEN_MAX  500
-#define PREPARE_BUF_MAX_SIZE        1024
-#define CHAR_DECLARATION_SIZE       (sizeof(uint8_t))
-
-#define ADV_CONFIG_FLAG             (1 << 0)
-#define SCAN_RSP_CONFIG_FLAG        (1 << 1)
 
 static uint8_t adv_config_done       = 0;
 
-uint16_t led_control_handle_table[HRS_IDX_NB];
-
-typedef struct {
-    uint8_t                 *prepare_buf;
-    int                     prepare_len;
-} prepare_type_env_t;
+uint16_t led_control_handle_table[LEDS_IDX_NB];
 
 static prepare_type_env_t prepare_write_env;
-
-#define CONFIG_SET_RAW_ADV_DATA
-
 
 #ifdef CONFIG_SET_RAW_ADV_DATA
 static uint8_t raw_adv_data[] = {
@@ -81,14 +42,12 @@ static uint8_t raw_scan_rsp_data[] = {
         /* service uuid */
         0x03, 0x03, 0xFF,0x00
 };
-
 #else
 static uint8_t service_uuid[16] = {
     /* LSB <--------------------------------------------------------------------------------> MSB */
     //first uuid, 16bit, [12],[13] is the value
     0xfb, 0x34, 0x9b, 0x5f, 0x80, 0x00, 0x00, 0x80, 0x00, 0x10, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00,
 };
-
 /* The length of adv data must be less than 31 bytes */
 static esp_ble_adv_data_t adv_data = {
     .set_scan_rsp        = false,
@@ -105,7 +64,6 @@ static esp_ble_adv_data_t adv_data = {
     .p_service_uuid      = service_uuid,
     .flag = (ESP_BLE_ADV_FLAG_GEN_DISC | ESP_BLE_ADV_FLAG_BREDR_NOT_SPT),
 };
-
 // scan response data
 static esp_ble_adv_data_t scan_rsp_data = {
     .set_scan_rsp        = true,
@@ -131,21 +89,6 @@ static esp_ble_adv_params_t adv_params = {
     .own_addr_type       = BLE_ADDR_TYPE_PUBLIC,
     .channel_map         = ADV_CHNL_ALL,
     .adv_filter_policy   = ADV_FILTER_ALLOW_SCAN_ANY_CON_ANY,
-};
-
-struct gatts_profile_inst {
-    esp_gatts_cb_t gatts_cb;
-    uint16_t gatts_if;
-    uint16_t app_id;
-    uint16_t conn_id;
-    uint16_t service_handle;
-    esp_gatt_srvc_id_t service_id;
-    uint16_t char_handle;
-    esp_bt_uuid_t char_uuid;
-    esp_gatt_perm_t perm;
-    esp_gatt_char_prop_t property;
-    uint16_t descr_handle;
-    esp_bt_uuid_t descr_uuid;
 };
 
 static void gatts_profile_event_handler(esp_gatts_cb_event_t event,esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param);
@@ -175,7 +118,7 @@ static const uint8_t char_value[4]                 = {0x11, 0x22, 0x33, 0x44};
 
 
 /* Full Database Description - Used to add attributes into the database */
-static const esp_gatts_attr_db_t gatt_db[HRS_IDX_NB] ={
+static const esp_gatts_attr_db_t gatt_db[LEDS_IDX_NB] ={
     // Service Declaration
     [IDX_SVC]        =
     {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&primary_service_uuid, ESP_GATT_PERM_READ,
@@ -322,7 +265,7 @@ void led_prepare_write_event_env(esp_gatt_if_t gatts_if, prepare_type_env_t *pre
 
 }
 
-void example_exec_write_event_env(prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param){
+void led_exec_write_event_env(prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param){
     if (param->exec_write.exec_write_flag == ESP_GATT_PREP_WRITE_EXEC && prepare_write_env->prepare_buf){
         esp_log_buffer_hex(GATTS_LED_TAG, prepare_write_env->prepare_buf, prepare_write_env->prepare_len);
     }else{
@@ -367,7 +310,7 @@ static void gatts_profile_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_
             }
             adv_config_done |= SCAN_RSP_CONFIG_FLAG;
     #endif
-            esp_err_t create_attr_ret = esp_ble_gatts_create_attr_tab(gatt_db, gatts_if, HRS_IDX_NB, SVC_INST_ID);
+            esp_err_t create_attr_ret = esp_ble_gatts_create_attr_tab(gatt_db, gatts_if, LEDS_IDX_NB, SVC_INST_ID);
             if (create_attr_ret){
                 ESP_LOGE(GATTS_LED_TAG, "create attr table failed, error code = %x", create_attr_ret);
             }
@@ -424,7 +367,8 @@ static void gatts_profile_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_
         case ESP_GATTS_EXEC_WRITE_EVT: 
             // the length of gattc prapare write data must be less than GATTS_LED_CHAR_VAL_LEN_MAX. 
             ESP_LOGI(GATTS_LED_TAG, "ESP_GATTS_EXEC_WRITE_EVT");
-            example_exec_write_event_env(&prepare_write_env, param);
+            //LED执行写入操作
+            led_exec_write_event_env(&prepare_write_env, param);
             break;
         case ESP_GATTS_MTU_EVT:
             ESP_LOGI(GATTS_LED_TAG, "ESP_GATTS_MTU_EVT, MTU %d", param->mtu.mtu);
@@ -456,9 +400,9 @@ static void gatts_profile_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_
             if (param->add_attr_tab.status != ESP_GATT_OK){
                 ESP_LOGE(GATTS_LED_TAG, "create attribute table failed, error code=0x%x", param->add_attr_tab.status);
             }
-            else if (param->add_attr_tab.num_handle != HRS_IDX_NB){
+            else if (param->add_attr_tab.num_handle != LEDS_IDX_NB){
                 ESP_LOGE(GATTS_LED_TAG, "create attribute table abnormally, num_handle (%d) \
-                        doesn't equal to HRS_IDX_NB(%d)", param->add_attr_tab.num_handle, HRS_IDX_NB);
+                        doesn't equal to LEDS_IDX_NB(%d)", param->add_attr_tab.num_handle, LEDS_IDX_NB);
             }
             else {
                 ESP_LOGI(GATTS_LED_TAG, "create attribute table successfully, the number handle = %d\n",param->add_attr_tab.num_handle);

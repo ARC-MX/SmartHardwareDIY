@@ -15,10 +15,15 @@
    to simple macros with numeric values, and/or #if/#endif blocks.
 */
 /*
+
  *
+
  * Automatically generated file; DO NOT EDIT.
+
  * Espressif IoT Development Framework Configuration
+
  *
+
  */
 /* If BT is not built at all */
 MEMORY
