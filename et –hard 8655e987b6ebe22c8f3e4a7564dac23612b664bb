@@ -1,0 +1,235 @@
+[33mcommit 8c06635acdd76dab6aaa19ce769fe25ab620a3ba[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Tue Aug 6 09:35:09 2019 +0800
+
+    修改结构
+
+[33mcommit 8655e987b6ebe22c8f3e4a7564dac23612b664bb[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Sun Aug 4 21:36:04 2019 +0800
+
+    上传参考原理图
+
+[33mcommit 320909baa134d57c02bf6b378374b63ddefadaa6[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Sun Aug 4 12:48:30 2019 +0800
+
+    ESP蓝牙功能更新
+
+[33mcommit b9f29e303d575bc06e75e9292e070f53f4117b6b[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Fri Aug 2 18:20:08 2019 +0800
+
+    微信小程序界面优化
+
+[33mcommit 429740377baf29b83c1cf68e4bc5feb79f7616bd[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Thu Aug 1 18:12:17 2019 +0800
+
+    修改蓝牙写入功能
+
+[33mcommit acade3ea0faf80f261939c0b0a88846ac5518101[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Thu Aug 1 00:05:24 2019 +0800
+
+    更改连接界面样式
+
+[33mcommit 7751fe62d416313afcd142f99ce225f36062a143[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Wed Jul 31 22:52:10 2019 +0800
+
+    微信小程序添加自动写入功能
+
+[33mcommit bf12fe27e649147d9c1a8ff47cdea490fba35064[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Wed Jul 31 17:46:57 2019 +0800
+
+    添加中文解码功能
+
+[33mcommit b91155af7ea27845509b108df7801eb11d804ac6[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Wed Jul 31 00:20:07 2019 +0800
+
+    增加中文显示功能
+
+[33mcommit 34b9db775fd9e56d103d111c3d583747c5cef3f4[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Tue Jul 30 17:57:55 2019 +0800
+
+    微信小程序增加读取数据功能
+
+[33mcommit 7cd8127ec1a9e8a7253694ba40591b85e55bc5a6[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Tue Jul 30 00:12:33 2019 +0800
+
+    微信小程序自动发送功能
+
+[33mcommit c4bb82ee380ba0a066f7536d1113ef7f53e40757[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Mon Jul 29 17:46:14 2019 +0800
+
+    微信小程序写入界面更改
+
+[33mcommit fd2c9bdaa778a5d8e15df319dc7bbc13fcc8241c[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Sun Jul 28 23:44:24 2019 +0800
+
+    增加微信小程序写入界面
+
+[33mcommit a0fe7d47b05ca4254e72ef3a99e7fd5a6a1b18a8[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Tue Jul 23 19:38:33 2019 +0800
+
+    修改微信小程序功能
+
+[33mcommit 472ba030107eebbe521d78d38c78ed1b979b39bb[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Mon Jul 22 18:12:46 2019 +0800
+
+    修改微信小程序功能
+
+[33mcommit 02611ad73c7bd9437a128f83712e22c191277d96[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Fri Jul 19 18:51:46 2019 +0800
+
+    小改
+
+[33mcommit 66efdec879dde0c33fd10a85d24b49f3e625a57b[m
+Author: ARCW <34829404+ARC-MX@users.noreply.github.com>
+Date:   Fri Jul 19 18:38:29 2019 +0800
+
+    Delete desktop.ini
+
+[33mcommit 6b7ed77aa3e1ca32980191275c1ab8e2560f122f[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Fri Jul 19 18:37:28 2019 +0800
+
+    重新添加硬件信息
+
+[33mcommit 3af41e52e8c0d449e86f76bcb8fc02d0e923da4a[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Fri Jul 19 18:36:35 2019 +0800
+
+    修改忽略文件
+
+[33mcommit fa5ae3d0fefe957f68802bf8b1bf1d2a0dd8d076[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Fri Jul 19 17:53:21 2019 +0800
+
+    微信小程序添加新页面
+
+[33mcommit 906f8425bdf8a05c41f84e18f9c242baf8d53cfa[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Fri Jul 19 00:44:45 2019 +0800
+
+    修改打赏码大小
+
+[33mcommit 95ee699f0928e968adfcb02330523ef3b85ba849[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Fri Jul 19 00:39:15 2019 +0800
+
+    更改打赏码大小
+
+[33mcommit fc5ae330ecbc03cbd64a4c93ee3001635b285d29[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Fri Jul 19 00:35:33 2019 +0800
+
+    微信小程序添加更改过滤功能
+
+[33mcommit e3e23e8b3ef1aa62c3dad4ce226a78bf2db32aa4[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Thu Jul 18 17:32:12 2019 +0800
+
+    微信小程序更新
+
+[33mcommit 209669a7cc55c515bb23241287e6237f6b16ea51[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Thu Jul 18 12:41:11 2019 +0800
+
+    修改打赏功能
+
+[33mcommit edb4044a465657b0904b284af2516675a4b2eed9[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Thu Jul 18 12:38:15 2019 +0800
+
+    修改README 添加打赏功能
+
+[33mcommit e2ae3f053b55488102935b139bceb7d4e9a79e1d[m
+Author: ARCW <34829404+ARC-MX@users.noreply.github.com>
+Date:   Thu Jul 18 09:54:07 2019 +0800
+
+    Update README.md
+
+[33mcommit c94c86e274ba75fca1be42b685e9485af67af9b0[m
+Author: ARCW <34829404+ARC-MX@users.noreply.github.com>
+Date:   Thu Jul 18 09:51:31 2019 +0800
+
+    Delete 9a6a713193529e27aeb66b61a2960d0b8266bcfb8121a-9xcuYm_fw658.jpg
+
+[33mcommit 50bc3cb0ffd17d35584c23d1c5994355c6d0d2bd[m
+Author: ARCW <34829404+ARC-MX@users.noreply.github.com>
+Date:   Thu Jul 18 09:51:09 2019 +0800
+
+    Add files via upload
+
+[33mcommit 678aed25563db9fed6757b211519dca02932bca6[m
+Author: ARCW <34829404+ARC-MX@users.noreply.github.com>
+Date:   Thu Jul 18 09:49:24 2019 +0800
+
+    Delete nullfile
+
+[33mcommit 921b059e4092ae75cb4fe8533ded62c638b3291d[m
+Author: ARCW <34829404+ARC-MX@users.noreply.github.com>
+Date:   Thu Jul 18 09:48:18 2019 +0800
+
+    Update README.md
+
+[33mcommit 0a5626d413093424a2040f58985981dc8d979bad[m
+Author: ARCW <34829404+ARC-MX@users.noreply.github.com>
+Date:   Thu Jul 18 09:47:23 2019 +0800
+
+    上传智能硬件贴图
+
+[33mcommit d0a0a41774828214e529f3441dffccd8cf93bb0c[m
+Author: ARCW <34829404+ARC-MX@users.noreply.github.com>
+Date:   Thu Jul 18 09:46:42 2019 +0800
+
+    Create nullfile
+
+[33mcommit dc558b9c9918df0a8eef2c8082e38ad7211f03fe[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Thu Jul 18 09:41:28 2019 +0800
+
+    修改README
+
+[33mcommit f7def1180b3fd4db335e84179278d1307d41e69b[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Thu Jul 18 09:21:02 2019 +0800
+
+    修改README
+
+[33mcommit 7f1760f16a0ca1daacc20abbfcb6c4358af4d585[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Thu Jul 18 09:19:46 2019 +0800
+
+    修改README
+
+[33mcommit ab594186f8f4e76a6901621b5af9e05f8da67c7f[m
+Author: ARCW <34829404+ARC-MX@users.noreply.github.com>
+Date:   Thu Jul 18 09:11:12 2019 +0800
+
+    添加 README
+    
+    添加readme
+
+[33mcommit bc35c96695801d599971a943aec187e41b74c29d[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Wed Jul 17 22:14:57 2019 +0800
+
+    微信小程序更改
+
+[33mcommit 996a85dc14bf749d0d1b58638cf0ca8009d3fa8b[m
+Author: ARC-MX <wmx129674@126.com>
+Date:   Wed Jul 17 20:36:31 2019 +0800
+
+    first commit

@@ -88,4 +88,10 @@ enum
 
 #ifdef __cplusplus
 }
+<<<<<<< HEAD
 #endif
+=======
+#endif
+
+
+>>>>>>> 0ca1e260ffa8ff438d7c774db09318c3ce1c7176
