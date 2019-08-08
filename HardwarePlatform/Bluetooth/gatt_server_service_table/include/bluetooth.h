@@ -5,10 +5,18 @@
    CONDITIONS OF ANY KIND, either express or implied.
 */
 
+#ifndef _BLUETOOTH_H_
+#define _BLUETOOTH_H_
+
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <iostream>
+#include <cstring>
+#include <sstream>
+
+
 
  #include "freertos/FreeRTOS.h"
  #include "freertos/task.h"
@@ -21,16 +29,21 @@
 #include "esp_gap_ble_api.h"
 #include "esp_gatts_api.h"
 #include "esp_bt_main.h"
-
 #include "esp_gatt_common_api.h"
 
-#define GATTS_LED_TAG "GATTS_TABLE_DEMO"
+#include "nvs_value.h"
+
+#define GATTS_LED_TAG "GATTS_LED"
 
 #define PROFILE_NUM                 1
 #define PROFILE_APP_IDX             0
 #define ESP_APP_ID                  0x55
-#define SAMPLE_DEVICE_NAME          "ESP_GATTS_DEMO"
+#define PWM_STORAGE                 "PWM_DUTY"
+
+
+#define BLUETOOTH_DEVICE_NAME       "M_X"
 #define SVC_INST_ID                 0
+#define MANUFACTURER_DATA           "王孟轩"  //制造商数据
 
 /* The max length of characteristic value. When the gatt client write or prepare write, 
 *  the data length must be less than GATTS_LED_CHAR_VAL_LEN_MAX. 
@@ -42,7 +55,12 @@
 #define ADV_CONFIG_FLAG             (1 << 0)
 #define SCAN_RSP_CONFIG_FLAG        (1 << 1)
 
-#define CONFIG_SET_RAW_ADV_DATA
+
+
+
+// #define CONFIG_SET_RAW_ADV_DATA
+
+
 
 #ifdef __cplusplus
 extern "C"{
@@ -69,6 +87,7 @@ typedef struct {
     int                     prepare_len;
 } prepare_type_env_t;
 
+
 /* Attributes State Machine */
 enum
 {
@@ -88,10 +107,23 @@ enum
 
 #ifdef __cplusplus
 }
-<<<<<<< HEAD
-#endif
-=======
 #endif
 
+struct char_values
+{
+    std::string char_value;
+    std::string char_notify_value;
+    std::string char_indicate_value;
+    std::string char_write_rsp_value;
+};
 
->>>>>>> 0ca1e260ffa8ff438d7c774db09318c3ce1c7176
+void set_char_value_A(std::string value);
+void set_char_value_B(std::string value);
+void set_char_value_C(std::string value);
+void set_char_notify_value_A(std::string value);
+void set_char_indicate_value_A(std::string value);
+
+void set_device_name(std::string device_name);
+void bluetooth_init();
+
+#endif 
