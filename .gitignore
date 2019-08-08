@@ -3,7 +3,7 @@
 *.zip
 *.o
 .HardwarePlatform/Bluetooth/gatt_server_service_table/.pio
-.HardwarePlatform/Bluetooth/gatt_server_service_table/vscode/
+.HardwarePlatform/Bluetooth/gatt_server_service_table/.vscode
 .HardwarePlatform/Bluetooth/BluetoothTest/.pio
-.HardwarePlatform/Bluetooth/BluetoothTest/vscode
+.HardwarePlatform/Bluetooth/BluetoothTest/.vscode
 .desktop.ini
