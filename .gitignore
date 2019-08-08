@@ -1,5 +1,3 @@
-
-
 *.zip
 *.o
 .HardwarePlatform/Bluetooth/gatt_server_service_table/.pio
