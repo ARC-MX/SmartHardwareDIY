@@ -1,13 +1,9 @@
 
 
-.HardwarePlatform/Bluetooth/PCB/ESP-Prog_reference_design.zip
-.HardwarePlatform/Bluetooth/PCB/ESP-WROOM-32_Reference_Design_V1.1_0.zip
+*.zip
+*.o
 .HardwarePlatform/Bluetooth/gatt_server_service_table/.pio
-.HardwarePlatform/Bluetooth/gatt_server_service_table/vscode/.browse.c_cpp.db*
-.HardwarePlatform/Bluetooth/gatt_server_service_table/vscode/c_cpp_properties.json
-.HardwarePlatform/Bluetooth/gatt_server_service_table/vscode/launch.json
+.HardwarePlatform/Bluetooth/gatt_server_service_table/vscode/
 .HardwarePlatform/Bluetooth/BluetoothTest/.pio
-.HardwarePlatform/Bluetooth/BluetoothTest/vscode/.browse.c_cpp.db*
-.HardwarePlatform/Bluetooth/BluetoothTest/vscode/c_cpp_properties.json
-.HardwarePlatform/Bluetooth/BluetoothTest/vscode/launch.json
+.HardwarePlatform/Bluetooth/BluetoothTest/vscode
 .desktop.ini
