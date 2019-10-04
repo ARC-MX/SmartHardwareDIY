@@ -1,0 +1,15 @@
+<!--pages/car/car.wxml-->
+<text>pages/car/car.wxml</text>
+
+<view class="carPage">
+  <view class="flexControl" style="flex-direction:column;">
+    <button class="controlButton up" bindtap="up" plain type="warn">上</button>
+    <view class="flexControl" style="flex-direction:row;">
+      <button class="controlButton left" bindtap="left" plain type="warn">左</button>
+      <button class="controlButton stop" bindtap="stop" plain type="warn">停</button>
+      <button class="controlButton right" bindtap="right" plain type="warn">右</button>
+    </view>
+    <button class="controlButton down" bindtap="down" plain type="warn">下</button>
+  </view>
+
+</view>

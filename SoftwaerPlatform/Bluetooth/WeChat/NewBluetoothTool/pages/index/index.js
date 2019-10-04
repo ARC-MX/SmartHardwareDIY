@@ -53,11 +53,15 @@ Page({
   },
 
   openBluetoothPage: function (e) {
-
     wx.navigateTo({
       url: '/pages/bleinfo/bleinfo'
     })
 
+  }, 
+  openCarPage: function (e) {
+    wx.navigateTo({
+      url: '/pages/car/car'
+    })
   }
 
 })

@@ -10,4 +10,7 @@
   <button class="open-BLE" bindtap="openBluetoothPage">
     <text class="open-BLE">{{motto}}</text>
   </button>
+  <button class="openCar" bindtap="openCarPage">
+    <text class="openCar">打开小车控制</text>
+  </button>
 </view>
