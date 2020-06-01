@@ -1,0 +1,28 @@
+/* pages/car/car.wxss */
+.carPage{
+  margin-left: 150rpx;
+  margin-top: 800rpx;
+}
+
+.flexControl {
+  display: flex;
+  text-align: center;
+
+}
+.up{
+   margin-top: 10rpx;
+}
+.left{
+  margin-left: 100rpx;
+  margin-top: 50rpx;
+}
+.stop{
+  margin-top: 50rpx;
+}
+.right{
+  margin-top: 50rpx;
+  margin-right: 100rpx;
+}
+.down{
+  margin-top: 50rpx;
+}

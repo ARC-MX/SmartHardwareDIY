@@ -4,7 +4,9 @@
     "pages/logs/logs",
     "pages/bleinfo/bleinfo",
     "pages/connection/connection",
-    "pages/characteristic/characteristic"
+    "pages/characteristic/characteristic",
+    "pages/car",
+    "pages/car/car"
   ],
   "window": {
     "backgroundTextStyle": "light",

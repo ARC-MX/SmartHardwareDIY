@@ -19,3 +19,7 @@
 .open-BLE {
   margin-top: 200px;
 }
+
+.openCar {
+  margin-top: 50px;
+}
