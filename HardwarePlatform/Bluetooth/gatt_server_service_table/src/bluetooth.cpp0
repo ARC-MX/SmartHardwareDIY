@@ -99,7 +99,7 @@ void set_char_value_A(std::string value)
 {
     char_values_A.char_value = value;
 }
-
+ 
 void set_char_value_B(std::string value)
 {
     char_values_B.char_value = value;
@@ -129,8 +129,40 @@ static void set_gatt_rsp(esp_gatt_rsp_t *rsp, string value)
 
 /* Full Database Description - Used to add attributes into the database */
 static esp_gatts_attr_db_t gatt_db[LEDS_IDX_NB] = {
+    // // Service Declaration 服务声明
+    // [IDX_SVC_PRIMARY] =
+    //     {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&primary_service_uuid, ESP_GATT_PERM_READ, sizeof(uint16_t), sizeof(GATTS_LED_SERVICE_UUID), (uint8_t *)&GATTS_LED_SERVICE_UUID}},
+
+    // /* Characteristic Declaration */ //特征值A声明
+    // [IDX_CHAR_A] =
+    //     {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&character_declaration_uuid, ESP_GATT_PERM_READ, CHAR_DECLARATION_SIZE, CHAR_DECLARATION_SIZE, (uint8_t *)&char_prop_read_write_notify}},
+
+    // /* Characteristic Value */ //特征值
+    // [IDX_CHAR_VAL_A] =
+    //     {{ESP_GATT_RSP_BY_APP}, {ESP_UUID_LEN_16, (uint8_t *)&GATTS_SWITCH_CHAR_UUID, ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE, GATTS_LED_CHAR_VAL_LEN_MAX, (uint16_t)char_values_A.char_value.length(), (uint8_t *)char_values_A.char_value.c_str()}},
+
+    // /* Client Characteristic Configuration Descriptor */ //客户端特征值描述
+    // [IDX_CHAR_CFG_A] =
+    //     {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&character_client_config_uuid, ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE, sizeof(uint16_t), sizeof(heart_measurement_ccc), (uint8_t *)heart_measurement_ccc}},
+
+    // /* Characteristic Declaration */ //特征值B声明
+    // [IDX_CHAR_B] =
+    //     {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&character_declaration_uuid, ESP_GATT_PERM_READ, CHAR_DECLARATION_SIZE, CHAR_DECLARATION_SIZE, (uint8_t *)&char_prop_read}},
+
+    // /* Characteristic Value */ //特征值
+    // [IDX_CHAR_VAL_B] =
+    //     {{ESP_GATT_RSP_BY_APP}, {ESP_UUID_LEN_16, (uint8_t *)&GATTS_TIMER_CHAR_UUID, ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE, GATTS_LED_CHAR_VAL_LEN_MAX, (uint16_t)char_values_B.char_value.length(), (uint8_t *)char_values_B.char_value.c_str()}},
+
+    // /* Characteristic Declaration */ //特征值C声明
+    // [IDX_CHAR_C] =
+    //     {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&character_declaration_uuid, ESP_GATT_PERM_READ, CHAR_DECLARATION_SIZE, CHAR_DECLARATION_SIZE, (uint8_t *)&char_prop_write}},
+
+    // /* Characteristic Value */ //特征值
+    // [IDX_CHAR_VAL_C] =
+    //     {{ESP_GATT_RSP_BY_APP}, {ESP_UUID_LEN_16, (uint8_t *)&GATTS_BRIGHTNESS_CHAR_UUID, ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE, GATTS_LED_CHAR_VAL_LEN_MAX, (uint16_t)char_values_C.char_value.length(), (uint8_t *)char_values_C.char_value.c_str()}},
+
     // Service Declaration 服务声明
-    [IDX_SVC] =
+    [IDX_SVC_PRIMARY] =
         {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&primary_service_uuid, ESP_GATT_PERM_READ, sizeof(uint16_t), sizeof(GATTS_LED_SERVICE_UUID), (uint8_t *)&GATTS_LED_SERVICE_UUID}},
 
     /* Characteristic Declaration */ //特征值A声明
@@ -160,6 +192,7 @@ static esp_gatts_attr_db_t gatt_db[LEDS_IDX_NB] = {
     /* Characteristic Value */ //特征值
     [IDX_CHAR_VAL_C] =
         {{ESP_GATT_RSP_BY_APP}, {ESP_UUID_LEN_16, (uint8_t *)&GATTS_BRIGHTNESS_CHAR_UUID, ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE, GATTS_LED_CHAR_VAL_LEN_MAX, (uint16_t)char_values_C.char_value.length(), (uint8_t *)char_values_C.char_value.c_str()}},
+
 
 };
 
@@ -504,8 +537,8 @@ static void gatts_profile_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_
             // the data length of gattc write  must be less than GATTS_LED_CHAR_VAL_LEN_MAX.
             ESP_LOGI(GATTS_LED_TAG, "GATT_WRITE_EVT, handle = %d, value len = %d, value :", param->write.handle, param->write.len);
             esp_log_buffer_hex(GATTS_LED_TAG, param->write.value, param->write.len);
-            cout << "PROFILE_LED param->write.value " << param->write.value << "(int)param->write.len " << (int)param->write.len << endl;
-            cout << "PROFILE_LED param->write.handle " << param->write.handle << endl;
+            cout << "PROFILE_LED param->write.value = " << param->write.value << "     param->write.len = " << (int)param->write.len << endl;
+            cout << "PROFILE_LED param->write.handle =" << param->write.handle << endl;
             //选定回复特征
             if (led_control_handle_table[IDX_CHAR_CFG_A] == param->write.handle || led_control_handle_table[IDX_CHAR_VAL_A] == param->write.handle)
             {
@@ -593,7 +626,7 @@ static void gatts_profile_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_
         {
             ESP_LOGI(GATTS_LED_TAG, "create attribute table successfully, the number handle = %d\n", param->add_attr_tab.num_handle);
             memcpy(led_control_handle_table, param->add_attr_tab.handles, sizeof(led_control_handle_table));
-            esp_ble_gatts_start_service(led_control_handle_table[IDX_SVC]);
+            esp_ble_gatts_start_service(led_control_handle_table[IDX_SVC_PRIMARY]);
         }
         break;
     }

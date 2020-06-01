@@ -8,7 +8,7 @@ Page({
    */
   data: {
     actionSheetHidden: false,
-    filterEnableChecked: true,
+    filterEnableChecked: false,
     discoveryFlag: true,
     hasBluetoothDivices: false,
     connected: false,
@@ -91,18 +91,22 @@ Page({
     })
     console.log(this.data.filterEnableChecked ? "设定蓝牙主服务过滤使能" : "设定蓝牙主服务过滤关闭")
 
-    if (this.data.filterEnableChecked) {
+    var devices_r = [];
+    var devices = this.data.bluetoothDevices;
 
-      var devices = this.data.bluetoothDevices;
-      var devices_r = [];
-      for (let index in devices) {
-        if (this.filterEachDevice(devices[index]))
-          devices_r.push(devices[index]);
-      }
-      this.setData({
-        bluetoothDevices: devices_r
-      })
+    for (let index in devices) {
+      if (this.data.filterEnableChecked) {
+      if (this.filterEachDevice(devices[index]))
+        devices_r.push(devices[index]);
+    }    else{
+      devices_r.push(devices[index]);
     }
+  }
+    this.setData({
+      bluetoothDevices: devices_r
+    })
+
+
   },
 
   //搜寻附近的蓝牙外围设备
@@ -121,17 +125,20 @@ Page({
       }
     })
   },
+  //停止搜寻附近的蓝牙外围设备
+  stopBluetoothDevicesDiscovery() {
+    wx.stopBluetoothDevicesDiscovery()
+  },
 
   //监听寻找到新设备的事件
   onBluetoothDeviceFound: function() {
     wx.onBluetoothDeviceFound(res => {
       res.devices.forEach(device => {
         if (this.filterEachDevice(device)) {
-          //console.log("------监听寻找到新设备的事件------\n",device.advertisServiceUUIDs.length)
+          console.log("------监听寻找到新设备的事件------\n",device.advertisServiceUUIDs.length)
           const foundDevices = this.data.bluetoothDevices
           const idx = utfEx.inArray(foundDevices, 'deviceId', device.deviceId) //判断当前设备是否列表中
           if (idx === -1) { //当前设备不在已有列表中，向列表中添加当前设备
-
             this.data.bluetoothDevices[foundDevices.length] = device
 
           } else { //当前设备在已有列表中，向列表中更新当前设备
@@ -150,8 +157,9 @@ Page({
   filterEachDevice: function(device) {
     //排除设备名称不一致的情况
     if (this.data.filterEnableChecked) {
+      console.log("------过滤无服务设备------\n", device)
       if (device.advertisServiceUUIDs.length == 0) {
-        //console.log("------无服务设备已过滤------\n", device)
+        console.log("------无服务设备已过滤------\n", device)
         return false;
       }
     }
@@ -163,6 +171,7 @@ Page({
     var index = e.currentTarget.dataset.index
     //将对象转为string
     var bluetoothDevice = JSON.stringify(this.data.bluetoothDevices[index])
+    this.stopBluetoothDevicesDiscovery();
     wx.navigateTo({
       url: '../connection/connection?currentTarget=' + bluetoothDevice
     })

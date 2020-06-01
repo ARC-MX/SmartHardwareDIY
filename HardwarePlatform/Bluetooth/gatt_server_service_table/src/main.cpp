@@ -30,6 +30,8 @@
 
 #include "bluetooth.h"
 #include "nvs_value.h"
+#include "pwm.h"
+
 /*
  * 应用程序的函数入口
  * @param[in]   NULL
@@ -85,6 +87,9 @@ void app_main()
     printf("........uart_init().........\n");
 	//uart_init();
 
+
+    pwm_init();
+
     printf("..........bluetooth_init().......\n");
     bluetooth_init();
     printf(".........xTaskCreate........\n");
@@ -101,9 +106,9 @@ void app_main()
     nvs_write(BLUETOOTH_DEVICE_NAME_STORAGE,BLUETOOTH_DEVICE_NAME);
 
 
-    // std::string str= "value";
-    // esp_gatt_value_t attr_value_a,attr_value;
-    // set_gatt_rsp(&attr_value_a,str);
+    std::string str= "我是我自己";
+    //esp_gatt_value_t attr_value_a,attr_value;
+    set_char_value_A(str);
 
     // memcpy(attr_value.value,attr_value_a.value,str.length());
 
@@ -114,5 +119,5 @@ void app_main()
     // cout << "rsp.attr_value.value........"<<rsp.attr_value.value<<endl;
 
 
-    set_char_value_A("ASD");
+    // set_char_value_B("ASD");
 }

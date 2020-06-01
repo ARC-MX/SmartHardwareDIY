@@ -126,10 +126,13 @@ Page({
         var currentCharacteristics = this.data.currentCharacteristics[this.data.currentCharacteristics.length];
 
         if (this._currentOpreation == "notify") {
-          currentCharacteristics["notifyValue"] = utfEx.decode2utf8(characteristic.value);
+          console.log("currentCharacteristics[notifyValue] 为：", characteristic.value);
+          //currentCharacteristics["notifyValue"] = characteristic.value;
+          currentCharacteristics["notifyValue"] = utfEx.ab2hex(characteristic.value);
           this._currentOpreation = "";
         } else if (this._currentOpreation == "read") {
-          currentCharacteristics["readValue"] = utfEx.decode2utf8(characteristic.value);
+          //currentCharacteristics["readValue"] = characteristic.value;
+          currentCharacteristics["readValue"] = utfEx.ab2hex(characteristic.value);
           this._currentOpreation = "";
         }
 
@@ -138,10 +141,12 @@ Page({
         var currentCharacteristics = this.data.currentCharacteristics[index];
 
         if (this._currentOpreation == "notify") {
-          currentCharacteristics["notifyValue"] = utfEx.decode2utf8(characteristic.value);
+          currentCharacteristics["notifyValue"] = utfEx.ab2hex(characteristic.value);
+          //currentCharacteristics["notifyValue"] = characteristic.value;
           this._currentOpreation = "";
         } else if (this._currentOpreation == "read") {
-          currentCharacteristics["readValue"] = utfEx.decode2utf8(characteristic.value);
+          //currentCharacteristics["readValue"] = characteristic.value;
+          currentCharacteristics["readValue"] = utfEx.ab2hex(characteristic.value);
           this._currentOpreation = "";
         }
 
